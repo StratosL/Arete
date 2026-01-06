@@ -1,5 +1,13 @@
+import logging
 from pydantic_settings import BaseSettings
 from typing import List
+
+# Configure logging with hybrid dotted namespace pattern
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
 
 class Settings(BaseSettings):
     app_name: str = "Arete"
@@ -22,3 +30,10 @@ class Settings(BaseSettings):
         env_file = ".env"
 
 settings = Settings()
+
+# Log configuration loaded
+logger.info("application.config.loaded", extra={
+    "app_name": settings.app_name,
+    "debug": settings.debug,
+    "max_file_size_mb": settings.max_file_size_mb
+})

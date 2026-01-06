@@ -1,10 +1,18 @@
-from fastapi import APIRouter, UploadFile, File, Form, HTTPException
-from typing import Optional
+import os
 import uuid
-from app.resume.parser import resume_parser
-from app.resume.schemas import ResumeUploadResponse, ResumeData
-from app.core.database import get_supabase_client
+from typing import Optional
+
+from fastapi import APIRouter
+from fastapi import File
+from fastapi import Form
+from fastapi import HTTPException
+from fastapi import UploadFile
+
 from app.core.config import settings
+from app.core.database import get_supabase_client
+from app.resume.parser import resume_parser
+from app.resume.schemas import ResumeData
+from app.resume.schemas import ResumeUploadResponse
 
 router = APIRouter(prefix="/resume", tags=["resume"])
 

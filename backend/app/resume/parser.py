@@ -1,7 +1,10 @@
+import json
+import os
+from typing import Optional
+
 import pdfplumber
 from docx import Document
-import json
-from typing import Optional
+
 from app.core.llm import get_llm_response
 
 class ResumeParser:

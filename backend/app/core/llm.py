@@ -1,6 +1,8 @@
-from litellm import completion
-from app.core.config import settings
 import os
+
+from litellm import completion
+
+from app.core.config import settings
 
 # Set API key for LiteLLM
 os.environ["ANTHROPIC_API_KEY"] = settings.claude_api_key

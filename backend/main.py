@@ -1,7 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.resume.routes import router as resume_router
+
 from app.core.config import settings
+from app.resume.routes import router as resume_router
 
 app = FastAPI(
     title="Arete API",
@@ -22,9 +23,9 @@ app.add_middleware(
 app.include_router(resume_router)
 
 @app.get("/")
-async def root():
+async def root() -> dict[str, str]:
     return {"message": "Arete API - AI Resume Optimizer", "version": "1.0.0"}
 
 @app.get("/health")
-async def health_check():
+async def health_check() -> dict[str, str]:
     return {"status": "healthy", "app": settings.app_name}

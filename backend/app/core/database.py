@@ -1,4 +1,6 @@
-from supabase import create_client, Client
+from supabase import Client
+from supabase import create_client
+
 from app.core.config import settings
 
 def get_supabase_client() -> Client:
