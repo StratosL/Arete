@@ -1,0 +1,30 @@
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from app.resume.routes import router as resume_router
+from app.core.config import settings
+
+app = FastAPI(
+    title="Arete API",
+    description="AI-powered resume optimizer for tech professionals",
+    version="1.0.0"
+)
+
+# CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Include routers
+app.include_router(resume_router)
+
+@app.get("/")
+async def root():
+    return {"message": "Arete API - AI Resume Optimizer", "version": "1.0.0"}
+
+@app.get("/health")
+async def health_check():
+    return {"status": "healthy", "app": settings.app_name}

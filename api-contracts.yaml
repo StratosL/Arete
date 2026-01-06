@@ -1,0 +1,235 @@
+openapi: 3.0.3
+info:
+  title: Arete API - AI Resume Optimizer
+  version: 1.0.0
+  description: API contracts for tech-focused resume optimization
+
+paths:
+  /resume/upload:
+    post:
+      summary: Upload and parse resume
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                github_url:
+                  type: string
+                  format: uri
+      responses:
+        200:
+          description: Resume parsed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResumeData'
+
+  /jobs/analyze:
+    post:
+      summary: Analyze job description
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                job_text:
+                  type: string
+                job_url:
+                  type: string
+                  format: uri
+      responses:
+        200:
+          description: Job analyzed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobAnalysis'
+
+  /optimize:
+    post:
+      summary: Optimize resume for job (SSE streaming)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                resume_id:
+                  type: string
+                job_id:
+                  type: string
+      responses:
+        200:
+          description: SSE stream of optimization progress
+          content:
+            text/event-stream:
+              schema:
+                type: string
+
+  /export/{format}:
+    post:
+      summary: Export optimized resume
+      parameters:
+        - name: format
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [pdf, docx]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                resume_id:
+                  type: string
+      responses:
+        200:
+          description: Document file
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+
+components:
+  schemas:
+    ResumeData:
+      type: object
+      properties:
+        id:
+          type: string
+        personal_info:
+          $ref: '#/components/schemas/PersonalInfo'
+        experience:
+          type: array
+          items:
+            $ref: '#/components/schemas/Experience'
+        skills:
+          $ref: '#/components/schemas/Skills'
+        projects:
+          type: array
+          items:
+            $ref: '#/components/schemas/Project'
+        education:
+          type: array
+          items:
+            $ref: '#/components/schemas/Education'
+
+    PersonalInfo:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        location:
+          type: string
+        github:
+          type: string
+        linkedin:
+          type: string
+
+    Experience:
+      type: object
+      properties:
+        title:
+          type: string
+        company:
+          type: string
+        duration:
+          type: string
+        description:
+          type: array
+          items:
+            type: string
+        technologies:
+          type: array
+          items:
+            type: string
+
+    Skills:
+      type: object
+      properties:
+        technical:
+          type: array
+          items:
+            type: string
+        frameworks:
+          type: array
+          items:
+            type: string
+        tools:
+          type: array
+          items:
+            type: string
+        languages:
+          type: array
+          items:
+            type: string
+
+    Project:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        technologies:
+          type: array
+          items:
+            type: string
+        github_url:
+          type: string
+        impact_metrics:
+          type: array
+          items:
+            type: string
+
+    Education:
+      type: object
+      properties:
+        degree:
+          type: string
+        institution:
+          type: string
+        graduation_year:
+          type: string
+        gpa:
+          type: string
+
+    JobAnalysis:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        company:
+          type: string
+        required_skills:
+          type: array
+          items:
+            type: string
+        preferred_skills:
+          type: array
+          items:
+            type: string
+        technologies:
+          type: array
+          items:
+            type: string
+        experience_level:
+          type: string
+        key_requirements:
+          type: array
+          items:
+            type: string
