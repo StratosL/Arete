@@ -26,17 +26,44 @@ Arete is an AI-powered job application optimizer specifically designed for tech 
    cp .env.example .env
    # Edit .env with your API keys:
    # - SUPABASE_URL and SUPABASE_KEY (get from supabase.com)
+   # - SUPABASE_SERVICE_KEY (get from supabase.com - service role key)
    # - CLAUDE_API_KEY (get from console.anthropic.com)
    ```
 
-3. **Run the application**
+3. **Run setup script**
+   ```bash
+   ./scripts/setup.sh
+   ```
+   This will:
+   - Validate your environment variables
+   - Run database migrations
+   - Create storage buckets and policies
+   - Set up everything needed for development
+
+4. **Start the application**
    ```bash
    docker-compose up --build
    ```
 
-4. **Access the interface**
+5. **Access the interface**
    - Web UI: http://localhost:3000
    - API Documentation: http://localhost:8000/docs
+
+### Manual Setup (Alternative)
+
+If you prefer to run setup steps manually:
+
+```bash
+# Validate environment
+python scripts/validate_env.py
+
+# Setup Supabase (requires Python dependencies)
+cd backend && pip install supabase python-dotenv && cd ..
+python scripts/setup_supabase.py
+
+# Start application
+docker-compose up --build
+```
 
 ## Current Features ✅
 
@@ -184,9 +211,10 @@ arete/
 
 **Database connection errors**
 - Verify Supabase credentials in `.env`
+- Run setup script: `./scripts/setup.sh`
 - Check network connectivity to Supabase
 - Review database schema and migrations
-- Test connection with Supabase client directly
+- Test connection: `python scripts/validate_env.py`
 
 ### Getting Help
 - Check application logs: `docker-compose logs -f`
