@@ -13,6 +13,26 @@ Arete is an AI-powered job application optimizer specifically designed for tech 
 - Supabase account (free tier available)
 - Claude API key from Anthropic
 
+### Supabase Setup
+
+1. **Create a Supabase project**
+   - Go to [supabase.com](https://supabase.com) and sign up/login
+   - Click "New Project"
+   - Choose your organization and enter project details
+   - Wait for the project to be created (~2 minutes)
+
+2. **Get your API keys**
+   - In your project dashboard, go to **Settings** → **API**
+   - Copy the following values:
+     - **Project URL** → `SUPABASE_URL`
+     - **anon public** key → `SUPABASE_KEY`
+     - **service_role** key → `SUPABASE_SERVICE_KEY` (click "Reveal" to see it)
+
+3. **Get Claude API key**
+   - Go to [console.anthropic.com](https://console.anthropic.com)
+   - Sign up/login and go to **API Keys**
+   - Create a new key → `CLAUDE_API_KEY`
+
 ## Quick Start
 
 1. **Clone and setup**
