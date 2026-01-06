@@ -9,6 +9,7 @@ services:
       - DEBUG=true
       - SUPABASE_URL=${SUPABASE_URL}
       - SUPABASE_KEY=${SUPABASE_KEY}
+      - SUPABASE_SERVICE_KEY=${SUPABASE_SERVICE_KEY}
       - CLAUDE_API_KEY=${CLAUDE_API_KEY}
     volumes:
       - ./backend:/app

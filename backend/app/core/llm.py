@@ -7,7 +7,7 @@ from app.core.config import settings
 # Set API key for LiteLLM
 os.environ["ANTHROPIC_API_KEY"] = settings.claude_api_key
 
-async def get_llm_response(messages: list, model: str = "claude-3-5-sonnet-20241022") -> str:
+async def get_llm_response(messages: list, model: str = "claude-3-5-sonnet-20240620") -> str:
     """Get response from Claude via LiteLLM"""
     try:
         response = completion(
@@ -19,7 +19,7 @@ async def get_llm_response(messages: list, model: str = "claude-3-5-sonnet-20241
     except Exception as e:
         raise Exception(f"LLM request failed: {str(e)}")
 
-async def stream_llm_response(messages: list, model: str = "claude-3-5-sonnet-20241022"):
+async def stream_llm_response(messages: list, model: str = "claude-3-5-sonnet-20240620"):
     """Stream response from Claude via LiteLLM"""
     try:
         response = completion(
