@@ -57,10 +57,12 @@ Arete is an AI-powered job application optimizer specifically designed for tech 
    ./scripts/setup.sh
    ```
    
-   **Windows:**
+   **Windows (Recommended):**
    ```cmd
    setup.bat
    ```
+   
+   **Windows (Alternative):** See [WINDOWS_SETUP.md](WINDOWS_SETUP.md) for detailed Windows instructions
    
    This will:
    - Validate your environment variables
@@ -68,7 +70,7 @@ Arete is an AI-powered job application optimizer specifically designed for tech 
    - Create storage buckets and policies
    - Set up everything needed for development
 
-   **Note for Windows users:** Run `setup.bat` from Command Prompt or PowerShell (right-click in project folder → "Open in Terminal"). Do not double-click the file as you won't see the output.
+   **Note for Windows users:** Run `setup.bat` from Command Prompt or PowerShell (right-click in project folder → "Open in Terminal"). The script uses Python for reliable environment handling.
 
 4. **Start the application**
    ```bash
