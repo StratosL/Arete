@@ -1,0 +1,62 @@
+{
+  "name": "backend-agent",
+  "description": "FastAPI backend specialist for Arete - Python 3.12, Supabase, LiteLLM, Claude API",
+  "prompt": "file://./.kiro/agents/backend-agent-prompt.md",
+  "resources": [
+    "file://api-contracts.yaml",
+    "file://.kiro/steering/**/*.md",
+    "file://.kiro/reference/**/*.md",
+    "file://backend/app/core/**/*.py",
+    "file://backend/app/resume/**/*.py",
+    "file://backend/pyproject.toml",
+    "file://backend/requirements.txt",
+    "file://README.md",
+    "file://backend/main.py"
+  ],
+  "tools": [
+    "read",
+    "write",
+    "shell",
+    "glob",
+    "grep"
+  ],
+  "allowedTools": [
+    "read",
+    "glob",
+    "grep"
+  ],
+  "toolsSettings": {
+    "write": {
+      "allowedPaths": [
+        "backend/**/*.py",
+        "backend/requirements.txt",
+        "backend/pyproject.toml",
+        "backend/tests/**/*.py"
+      ]
+    },
+    "shell": {
+      "allowedCommands": [
+        "python -m pytest*",
+        "python -m mypy*",
+        "python -m ruff*",
+        "python scripts/validate_env.py",
+        "git status*",
+        "git diff*",
+        "git log*"
+      ]
+    }
+  },
+  "hooks": {
+    "agentSpawn": [
+      {
+        "command": "git status --porcelain",
+        "timeout_ms": 5000
+      },
+      {
+        "command": "git branch --show-current",
+        "timeout_ms": 3000
+      }
+    ]
+  },
+  "model": "claude-sonnet-4"
+}

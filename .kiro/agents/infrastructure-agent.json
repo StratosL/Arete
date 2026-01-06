@@ -1,0 +1,76 @@
+{
+  "name": "infrastructure-agent",
+  "description": "Docker + DevOps specialist for Arete - Docker, Docker Compose, environment configuration, cross-platform deployment",
+  "prompt": "file://./.kiro/agents/infrastructure-agent-prompt.md",
+  "resources": [
+    "file://docker-compose.yml",
+    "file://backend/Dockerfile",
+    "file://frontend/Dockerfile",
+    "file://.env.example",
+    "file://.dockerignore",
+    "file://.kiro/steering/**/*.md",
+    "file://scripts/**/*.py",
+    "file://scripts/**/*.sh",
+    "file://scripts/**/*.bat",
+    "file://README.md",
+    "file://WINDOWS_SETUP.md"
+  ],
+  "tools": [
+    "read",
+    "write",
+    "shell",
+    "glob",
+    "grep"
+  ],
+  "allowedTools": [
+    "read",
+    "glob",
+    "grep",
+    "shell"
+  ],
+  "toolsSettings": {
+    "write": {
+      "allowedPaths": [
+        "docker-compose.yml",
+        "backend/Dockerfile",
+        "frontend/Dockerfile",
+        ".env.example",
+        ".dockerignore",
+        "backend/.dockerignore",
+        "frontend/.dockerignore",
+        "scripts/**/*.sh",
+        "scripts/**/*.bat",
+        "scripts/**/*.py"
+      ]
+    },
+    "shell": {
+      "allowedCommands": [
+        "docker-compose*",
+        "docker*",
+        "ls*",
+        "cat*",
+        "git status*",
+        "git diff*",
+        "git log*",
+        "python scripts/validate_env.py"
+      ]
+    }
+  },
+  "hooks": {
+    "agentSpawn": [
+      {
+        "command": "docker-compose ps",
+        "timeout_ms": 10000
+      },
+      {
+        "command": "git status --porcelain",
+        "timeout_ms": 5000
+      },
+      {
+        "command": "git branch --show-current",
+        "timeout_ms": 3000
+      }
+    ]
+  },
+  "model": "claude-sonnet-4"
+}
