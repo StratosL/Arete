@@ -1,4 +1,3 @@
-import React from 'react';
 import { ResumeData } from '@/types';
 import { User, Briefcase, Code, FolderOpen, GraduationCap } from 'lucide-react';
 
@@ -6,7 +5,7 @@ interface ResumeDisplayProps {
   resumeData: ResumeData;
 }
 
-export const ResumeDisplay: React.FC<ResumeDisplayProps> = ({ resumeData }) => {
+export const ResumeDisplay = ({ resumeData }: ResumeDisplayProps) => {
   return (
     <div className="w-full max-w-4xl mx-auto p-6 space-y-8">
       <div className="text-center">

@@ -1,13 +1,14 @@
-import React, { useState, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { Upload, FileText, Github } from 'lucide-react';
 import { resumeApi } from '@/lib/api';
 import { ResumeData } from '@/types';
 
 interface ResumeUploadProps {
-  onUploadSuccess: (data: ResumeData) => void;
+  // eslint-disable-next-line no-unused-vars
+  onUploadSuccess: (resumeData: ResumeData) => void;
 }
 
-export const ResumeUpload: React.FC<ResumeUploadProps> = ({ onUploadSuccess }) => {
+export const ResumeUpload = ({ onUploadSuccess }: ResumeUploadProps) => {
   const [file, setFile] = useState<File | null>(null);
   const [githubUrl, setGithubUrl] = useState('');
   const [isUploading, setIsUploading] = useState(false);

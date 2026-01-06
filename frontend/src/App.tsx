@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { ResumeUpload } from './components/ResumeUpload';
 import { ResumeDisplay } from './components/ResumeDisplay';
 import { ResumeData } from './types';
