@@ -51,14 +51,24 @@ Arete is an AI-powered job application optimizer specifically designed for tech 
    ```
 
 3. **Run setup script**
+
+   **Linux/Mac:**
    ```bash
    ./scripts/setup.sh
    ```
+   
+   **Windows:**
+   ```cmd
+   setup.bat
+   ```
+   
    This will:
    - Validate your environment variables
    - Run database migrations
    - Create storage buckets and policies
    - Set up everything needed for development
+
+   **Note for Windows users:** Run `setup.bat` from Command Prompt or PowerShell (right-click in project folder → "Open in Terminal"). Do not double-click the file as you won't see the output.
 
 4. **Start the application**
    ```bash
@@ -73,12 +83,28 @@ Arete is an AI-powered job application optimizer specifically designed for tech 
 
 If you prefer to run setup steps manually:
 
+**Linux/Mac:**
 ```bash
 # Validate environment
 python scripts/validate_env.py
 
 # Setup Supabase (requires Python dependencies)
 cd backend && pip install supabase python-dotenv && cd ..
+python scripts/setup_supabase.py
+
+# Start application
+docker-compose up --build
+```
+
+**Windows:**
+```cmd
+# Validate environment
+python scripts/validate_env.py
+
+# Setup Supabase (requires Python dependencies)
+cd backend
+pip install supabase python-dotenv
+cd ..
 python scripts/setup_supabase.py
 
 # Start application
