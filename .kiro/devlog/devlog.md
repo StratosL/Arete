@@ -3,8 +3,8 @@
 **Project**: Arete - AI-Powered Resume Optimizer for Tech Professionals  
 **Hackathon**: Dynamous + Kiro Hackathon  
 **Duration**: January 5-23, 2026  
-**Developer**: [Your Name]  
-**Repository**: [Repository URL]  
+**Developer**: Stratos Louvaris 
+**Repository**: https://github.com/StratosL/Arete 
 
 ## Project Overview
 Arete is an AI-powered job application optimizer specifically designed for tech professionals. It transforms generic resumes into ATS-optimized, role-specific applications by understanding technical terminology, frameworks, and GitHub profiles. Unlike generic resume tools, Arete speaks the language of software engineering and provides real-time streaming optimization with actionable, tech-specific insights.
