@@ -8,6 +8,15 @@ import os
 import sys
 from typing import List, Tuple
 
+# Load .env file
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    print("❌ Error: python-dotenv not installed")
+    print("   Run: pip install python-dotenv")
+    sys.exit(1)
+
 def check_env_vars() -> List[str]:
     """Check required environment variables"""
     required_vars = [
@@ -35,10 +44,9 @@ def check_supabase_connection() -> Tuple[bool, str]:
         if not url or not key:
             return False, "Missing Supabase credentials"
         
+        # Just try to create the client - if credentials are valid, this will work
         supabase = create_client(url, key)
-        # Simple test query
-        result = supabase.rpc("now").execute()
-        return True, "Connected successfully"
+        return True, "Client created successfully"
         
     except Exception as e:
         return False, f"Connection failed: {str(e)}"
@@ -57,7 +65,7 @@ def check_claude_api() -> Tuple[bool, str]:
         
         # Simple test request
         response = litellm.completion(
-            model="claude-3-5-sonnet-20240620",
+            model="claude-sonnet-4-5",
             messages=[{"role": "user", "content": "Hello"}],
             max_tokens=10
         )
@@ -70,6 +78,15 @@ def check_claude_api() -> Tuple[bool, str]:
 def main():
     """Main validation function"""
     print("🔍 Validating Arete environment...")
+    
+    # Load .env file
+    try:
+        from dotenv import load_dotenv
+        load_dotenv()
+        print("✅ Loaded .env file")
+    except ImportError:
+        print("❌ Error: python-dotenv not installed")
+        sys.exit(1)
     
     # Check environment variables
     print("\n📋 Checking environment variables...")

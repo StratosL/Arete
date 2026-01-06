@@ -37,7 +37,7 @@ Arete is an AI-powered job application optimizer specifically designed for tech 
 
 1. **Clone and setup**
    ```bash
-   git clone https://github.com/username/arete
+   git clone https://github.com/StratosL/Arete.git
    cd arete
    ```
 
@@ -248,6 +248,7 @@ arete/
 - Verify file size is under 10MB
 - Review logs: `docker-compose logs backend`
 - Test with different file: some PDFs have complex layouts
+- Ensure Claude API key is valid and has sufficient credits
 
 **Frontend build fails**
 - Clear node modules: `rm -rf node_modules && npm install`

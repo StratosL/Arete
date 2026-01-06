@@ -14,6 +14,14 @@ from supabase.lib.client_options import ClientOptions
 
 def get_supabase_client() -> Client:
     """Create Supabase client with service key for admin operations"""
+    # Load .env file
+    try:
+        from dotenv import load_dotenv
+        load_dotenv()
+    except ImportError:
+        print("❌ Error: python-dotenv not installed")
+        sys.exit(1)
+    
     url = os.getenv("SUPABASE_URL")
     service_key = os.getenv("SUPABASE_SERVICE_KEY")
     
