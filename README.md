@@ -2,8 +2,8 @@
 
 Arete is an AI-powered job application optimizer specifically designed for tech professionals. It transforms generic resumes into ATS-optimized, role-specific applications by understanding technical terminology, frameworks, and GitHub profiles. Unlike generic resume tools, Arete speaks the language of software engineering and provides real-time streaming optimization with actionable, tech-specific insights.
 
-**🎯 Current Status**: Phase 1 Complete - Resume Upload & Parsing Feature Ready  
-**🚀 Live Demo**: Upload PDF/DOCX/TXT resumes with AI-powered parsing  
+**🎯 Current Status**: Phase 1 Complete - Resume Upload & Parsing Feature Fully Functional  
+**🚀 Live Demo**: Upload PDF/DOCX/TXT resumes with AI-powered parsing working end-to-end  
 **⚡ Tech Stack**: FastAPI + React + TypeScript + Supabase + Claude API
 
 ## Prerequisites
@@ -249,6 +249,7 @@ arete/
 - Review logs: `docker-compose logs backend`
 - Test with different file: some PDFs have complex layouts
 - Ensure Claude API key is valid and has sufficient credits
+- Restart backend if schema changes: `docker-compose restart backend`
 
 **Frontend build fails**
 - Clear node modules: `rm -rf node_modules && npm install`

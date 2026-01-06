@@ -9,7 +9,7 @@ from fastapi import HTTPException
 from fastapi import UploadFile
 
 from app.core.config import settings
-from app.core.database import get_supabase_client
+from app.core.database import get_supabase_service_client
 from app.resume.parser import resume_parser
 from app.resume.schemas import ResumeData
 from app.resume.schemas import ResumeUploadResponse
@@ -51,18 +51,21 @@ async def upload_resume(
         # Add ID to parsed data
         parsed_data["id"] = resume_id
         
-        # Store in Supabase
-        supabase = get_supabase_client()
+        # Store in Supabase (use service client for admin operations)
+        supabase = get_supabase_service_client()
         
         # Store file in Supabase Storage
         storage_path = f"resumes/{resume_id}/{file.filename}"
         supabase.storage.from_("resumes").upload(storage_path, file_content)
         
-        # Store parsed data in database
+        # Store parsed data in database (MVP: no authentication required)
         supabase.table("resumes").insert({
             "id": resume_id,
+            "user_id": None,  # MVP: No authentication yet
             "filename": file.filename,
-            "storage_path": storage_path,
+            "file_path": storage_path,
+            "file_size": len(file_content),
+            "file_type": file_extension,
             "github_url": github_url,
             "parsed_data": parsed_data,
             "status": "parsed"

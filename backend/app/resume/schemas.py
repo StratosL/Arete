@@ -30,9 +30,9 @@ class Project(BaseModel):
     impact_metrics: List[str]
 
 class Education(BaseModel):
-    degree: str
-    institution: str
-    graduation_year: str
+    degree: Optional[str] = None
+    institution: Optional[str] = None
+    graduation_year: Optional[str] = None
     gpa: Optional[str] = None
 
 class ResumeData(BaseModel):
