@@ -54,6 +54,7 @@ Arete is an AI-powered job application optimizer specifically designed for tech 
 - **AI Engine**: Claude 3.5 Sonnet via LiteLLM for intelligent resume parsing
 - **Database**: Supabase (PostgreSQL + Auth + Storage) for scalable data management
 - **Architecture**: Vertical Slice Architecture (VSA) for maintainable, feature-based organization
+- **Code Quality**: Comprehensive validation system enforcing all .kiro/reference/ standards
 
 ## Upcoming Features 🚧
 
@@ -128,6 +129,14 @@ arete/
 - **Quality Control**: Plan approval and 30-minute checkpoints
 - **Zero Integration Issues**: Research-backed approach with 95%+ success rate
 
+### Code Quality & Validation
+- **Comprehensive Standards**: All .kiro/reference/ standards enforced automatically
+- **Validation Scripts**: Quick and detailed code quality checking
+- **Testing Framework**: Complete pytest suite with async support and mocking
+- **Type Safety**: MyPy strict mode with full type annotations
+- **Code Formatting**: Ruff configuration for consistent style
+- **Logging Standards**: Hybrid dotted namespace pattern implementation
+
 ### Kiro CLI Integration
 - **Custom Prompts**: Development workflow automation
 - **Steering Documents**: Define product vision, tech stack, and structure
@@ -140,6 +149,12 @@ arete/
 - **Efficient Parsing**: Two-stage approach balances accuracy with speed
 - **Resource Limits**: File size limits, processing timeouts, memory management
 
+### Code Quality Validation
+- **Automated Validation**: Run `.kiro/scripts/quick_validate.sh` for quick checks
+- **Comprehensive Analysis**: Run `python3 .kiro/scripts/validate_code_quality.py` for detailed validation
+- **Standards Enforced**: Ruff formatting, MyPy type checking, pytest testing, VSA architecture
+- **Clean Repository**: .gitignore prevents build artifacts and dependencies from being tracked
+
 ## Troubleshooting
 
 ### Common Issues
@@ -147,8 +162,6 @@ arete/
 **Resume parsing fails**
 - Check file format (PDF, DOCX, TXT only)
 - Verify file size is under 10MB
-### Performance Optimizations
-- **Async Processing**: FastAPI with async/await for concurrent operations
 - **Streaming Responses**: SSE for real-time user feedback
 - **Efficient Parsing**: Two-stage approach balances accuracy with speed
 - **Resource Limits**: File size limits, processing timeouts, memory management
