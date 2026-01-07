@@ -9,7 +9,9 @@ from app.core.llm import get_llm_response
 class ResumeParser:
     """Two-stage resume parser: File → Markdown → JSON"""
 
-    async def parse_file(self, file_content: bytes, filename: str, github_url: str | None = None) -> dict:
+    async def parse_file(
+        self, file_content: bytes, filename: str, github_url: str | None = None
+    ) -> dict:
         """Parse resume file through two-stage process"""
 
         # Stage 1: Extract text to markdown

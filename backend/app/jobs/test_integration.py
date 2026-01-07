@@ -32,7 +32,9 @@ class TestJobsIntegration:
         }
 
         # Mock Supabase
-        mock_supabase.return_value.table.return_value.insert.return_value.execute.return_value = None
+        mock_supabase.return_value.table.return_value.insert.return_value.execute.return_value = (
+            None
+        )
 
         response = client.post("/jobs/analyze", json={
             "job_text": "Software Engineer position requiring Python and FastAPI experience"
@@ -65,7 +67,9 @@ class TestJobsIntegration:
         }
 
         # Mock Supabase
-        mock_supabase.return_value.table.return_value.insert.return_value.execute.return_value = None
+        mock_supabase.return_value.table.return_value.insert.return_value.execute.return_value = (
+            None
+        )
 
         response = client.post("/jobs/analyze", json={
             "job_url": "https://example.com/job/123"
