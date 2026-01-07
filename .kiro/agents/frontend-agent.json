@@ -1,7 +1,7 @@
 {
   "name": "frontend-agent",
   "description": "React + TypeScript frontend specialist for Arete - React 18, TypeScript 5, Vite 6, shadcn/ui, Tailwind CSS",
-  "prompt": "file://./.kiro/agents/frontend-agent-prompt.md",
+  "prompt": "file://frontend-agent-prompt.md",
   "resources": [
     "file://api-contracts.yaml",
     "file://.kiro/steering/**/*.md",

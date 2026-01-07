@@ -1,7 +1,7 @@
 {
   "name": "infrastructure-agent",
   "description": "Docker + DevOps specialist for Arete - Docker, Docker Compose, environment configuration, cross-platform deployment",
-  "prompt": "file://./.kiro/agents/infrastructure-agent-prompt.md",
+  "prompt": "file://infrastructure-agent-prompt.md",
   "resources": [
     "file://docker-compose.yml",
     "file://backend/Dockerfile",

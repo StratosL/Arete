@@ -1,0 +1,35 @@
+{
+  "name": "enhanced-orchestrator",
+  "description": "Enhanced Orchestrator Strategy - Coordinates parallel development with quality gates and contract-first approach",
+  "prompt": "file://enhanced-orchestrator-prompt.md",
+  "resources": [
+    "file://.kiro/orchestration/**/*.md",
+    "file://.kiro/steering/**/*.md",
+    "file://api-contracts.yaml",
+    "file://README.md",
+    "file://.kiro/agents/**/*.json"
+  ],
+  "tools": [
+    "read",
+    "write", 
+    "shell",
+    "glob",
+    "grep",
+    "use_subagent"
+  ],
+  "allowedTools": [
+    "read",
+    "glob", 
+    "grep",
+    "use_subagent"
+  ],
+  "hooks": {
+    "agentSpawn": [
+      {
+        "command": "bash .kiro/scripts/orchestrator-status.sh",
+        "timeout_ms": 10000
+      }
+    ]
+  },
+  "model": "claude-sonnet-4"
+}

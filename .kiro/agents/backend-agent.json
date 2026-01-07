@@ -1,7 +1,7 @@
 {
   "name": "backend-agent",
   "description": "FastAPI backend specialist for Arete - Python 3.12, Supabase, LiteLLM, Claude API",
-  "prompt": "file://./.kiro/agents/backend-agent-prompt.md",
+  "prompt": "file://backend-agent-prompt.md",
   "resources": [
     "file://api-contracts.yaml",
     "file://.kiro/steering/**/*.md",
