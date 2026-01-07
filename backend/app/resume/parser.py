@@ -1,18 +1,17 @@
 import json
-import os
-from typing import Optional
 
 import pdfplumber
 from docx import Document
 
 from app.core.llm import get_llm_response
 
+
 class ResumeParser:
     """Two-stage resume parser: File → Markdown → JSON"""
-    
-    async def parse_file(self, file_content: bytes, filename: str, github_url: Optional[str] = None) -> dict:
+
+    async def parse_file(self, file_content: bytes, filename: str, github_url: str | None = None) -> dict:
         """Parse resume file through two-stage process"""
-        
+
         # Stage 1: Extract text to markdown
         if filename.endswith('.pdf'):
             markdown_text = self._parse_pdf(file_content)
@@ -22,18 +21,18 @@ class ResumeParser:
             markdown_text = file_content.decode('utf-8')
         else:
             raise ValueError("Unsupported file format")
-        
+
         # Stage 2: LLM processing to structured JSON
         structured_data = await self._markdown_to_json(markdown_text, github_url)
-        
+
         return structured_data
-    
+
     def _parse_pdf(self, file_content: bytes) -> str:
         """Extract text from PDF and convert to markdown format"""
         import io
-        
+
         markdown_lines = []
-        
+
         with pdfplumber.open(io.BytesIO(file_content)) as pdf:
             for page in pdf.pages:
                 text = page.extract_text()
@@ -49,16 +48,16 @@ class ResumeParser:
                             else:
                                 markdown_lines.append(line)
                     markdown_lines.append("")  # Page break
-        
+
         return '\n'.join(markdown_lines)
-    
+
     def _parse_docx(self, file_content: bytes) -> str:
         """Extract text from DOCX and convert to markdown format"""
         import io
-        
+
         doc = Document(io.BytesIO(file_content))
         markdown_lines = []
-        
+
         for paragraph in doc.paragraphs:
             text = paragraph.text.strip()
             if text:
@@ -67,14 +66,14 @@ class ResumeParser:
                     markdown_lines.append(f"## {text}")
                 else:
                     markdown_lines.append(text)
-        
+
         return '\n'.join(markdown_lines)
-    
-    async def _markdown_to_json(self, markdown_text: str, github_url: Optional[str] = None) -> dict:
+
+    async def _markdown_to_json(self, markdown_text: str, github_url: str | None = None) -> dict:
         """Convert markdown resume to structured JSON using LLM"""
-        
+
         github_context = f"\nGitHub Profile: {github_url}" if github_url else ""
-        
+
         prompt = f"""
         Parse this resume into structured JSON format. Extract all information accurately.
         
@@ -126,10 +125,10 @@ class ResumeParser:
             ]
         }}
         """
-        
+
         messages = [{"role": "user", "content": prompt}]
         response = await get_llm_response(messages)
-        
+
         try:
             # Clean response and parse JSON
             json_str = response.strip()
@@ -137,10 +136,10 @@ class ResumeParser:
                 json_str = json_str[7:-3]
             elif json_str.startswith('```'):
                 json_str = json_str[3:-3]
-            
+
             return json.loads(json_str)
         except json.JSONDecodeError as e:
-            raise ValueError(f"Failed to parse LLM response as JSON: {str(e)}")
+            raise ValueError(f"Failed to parse LLM response as JSON: {e!s}")
 
 # Global parser instance
 resume_parser = ResumeParser()

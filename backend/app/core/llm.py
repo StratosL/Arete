@@ -17,7 +17,7 @@ async def get_llm_response(messages: list, model: str = "claude-sonnet-4-5") -> 
         )
         return response.choices[0].message.content
     except Exception as e:
-        raise Exception(f"LLM request failed: {str(e)}")
+        raise Exception(f"LLM request failed: {e!s}")
 
 async def stream_llm_response(messages: list, model: str = "claude-sonnet-4-5"):
     """Stream response from Claude via LiteLLM"""
@@ -32,4 +32,4 @@ async def stream_llm_response(messages: list, model: str = "claude-sonnet-4-5"):
             if chunk.choices[0].delta.content:
                 yield chunk.choices[0].delta.content
     except Exception as e:
-        yield f"Error: {str(e)}"
+        yield f"Error: {e!s}"

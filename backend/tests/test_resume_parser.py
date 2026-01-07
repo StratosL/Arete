@@ -3,7 +3,6 @@ Test suite for resume parsing functionality
 Following pytest standards from .kiro/reference/pytest-standard.md
 """
 
-import asyncio
 from unittest.mock import Mock
 from unittest.mock import patch
 
@@ -24,15 +23,15 @@ class TestResumeParser:
         """Test basic PDF parsing functionality"""
         # Mock PDF content
         mock_content = b"John Doe\nSoftware Engineer\nPython, FastAPI"
-        
+
         with patch('pdfplumber.open') as mock_pdf:
             # Setup mock PDF
             mock_page = Mock()
             mock_page.extract_text.return_value = "John Doe\nSoftware Engineer\nPython, FastAPI"
             mock_pdf.return_value.__enter__.return_value.pages = [mock_page]
-            
+
             result = self.parser._parse_pdf(mock_content)
-            
+
             assert isinstance(result, str)
             assert "John Doe" in result
             assert "Software Engineer" in result
@@ -40,16 +39,16 @@ class TestResumeParser:
     def test_parse_docx_basic(self):
         """Test basic DOCX parsing functionality"""
         mock_content = b"mock docx content"
-        
+
         with patch('docx.Document') as mock_doc:
             # Setup mock document
             mock_paragraph = Mock()
             mock_paragraph.text = "Jane Smith\nData Scientist"
             mock_paragraph.style.name = "Normal"
             mock_doc.return_value.paragraphs = [mock_paragraph]
-            
+
             result = self.parser._parse_docx(mock_content)
-            
+
             assert isinstance(result, str)
             assert "Jane Smith" in result
 
@@ -64,7 +63,7 @@ class TestResumeParser:
         - Senior Developer at TechCorp
         - Python, FastAPI, React
         """
-        
+
         with patch('app.resume.parser.get_llm_response') as mock_llm:
             # Mock LLM response
             mock_response = '''
@@ -89,9 +88,9 @@ class TestResumeParser:
             }
             '''
             mock_llm.return_value = mock_response
-            
+
             result = await self.parser._markdown_to_json(markdown_text)
-            
+
             assert isinstance(result, dict)
             assert "personal_info" in result
             assert result["personal_info"]["name"] == "John Doe"
@@ -102,10 +101,10 @@ class TestResumeParser:
         """Integration test for complete PDF parsing workflow"""
         mock_content = b"PDF content"
         filename = "resume.pdf"
-        
+
         with patch.object(self.parser, '_parse_pdf') as mock_parse_pdf, \
              patch.object(self.parser, '_markdown_to_json') as mock_to_json:
-            
+
             mock_parse_pdf.return_value = "Parsed markdown content"
             mock_to_json.return_value = {
                 "personal_info": {"name": "Test User", "email": "test@example.com"},
@@ -114,9 +113,9 @@ class TestResumeParser:
                 "projects": [],
                 "education": []
             }
-            
+
             result = await self.parser.parse_file(mock_content, filename)
-            
+
             assert isinstance(result, dict)
             assert "personal_info" in result
             mock_parse_pdf.assert_called_once_with(mock_content)
@@ -126,7 +125,7 @@ class TestResumeParser:
         """Test handling of unsupported file formats"""
         mock_content = b"content"
         filename = "resume.txt"  # Supported format
-        
+
         # This should not raise an exception for txt
         # But let's test an unsupported format
         with pytest.raises(ValueError, match="Unsupported file format"):
@@ -172,7 +171,7 @@ class TestResumeSchemas:
             "projects": [],
             "education": []
         }
-        
+
         resume = ResumeData(**valid_data)
         assert resume.id == "test-123"
         assert resume.personal_info.name == "John Doe"
@@ -193,7 +192,7 @@ class TestResumeSchemas:
             "projects": [],
             "education": []
         }
-        
+
         # Currently passes - could add email validation in future
         resume = ResumeData(**invalid_data)
         assert resume.personal_info.email == "invalid-email"

@@ -1,50 +1,51 @@
+
 from pydantic import BaseModel
-from typing import List, Optional
+
 
 class PersonalInfo(BaseModel):
     name: str
     email: str
-    phone: Optional[str] = None
-    location: Optional[str] = None
-    github: Optional[str] = None
-    linkedin: Optional[str] = None
+    phone: str | None = None
+    location: str | None = None
+    github: str | None = None
+    linkedin: str | None = None
 
 class Experience(BaseModel):
     title: str
     company: str
     duration: str
-    description: List[str]
-    technologies: List[str]
+    description: list[str]
+    technologies: list[str]
 
 class Skills(BaseModel):
-    technical: List[str]
-    frameworks: List[str]
-    tools: List[str]
-    languages: List[str]
+    technical: list[str]
+    frameworks: list[str]
+    tools: list[str]
+    languages: list[str]
 
 class Project(BaseModel):
     name: str
     description: str
-    technologies: List[str]
-    github_url: Optional[str] = None
-    impact_metrics: List[str]
+    technologies: list[str]
+    github_url: str | None = None
+    impact_metrics: list[str]
 
 class Education(BaseModel):
-    degree: Optional[str] = None
-    institution: Optional[str] = None
-    graduation_year: Optional[str] = None
-    gpa: Optional[str] = None
+    degree: str | None = None
+    institution: str | None = None
+    graduation_year: str | None = None
+    gpa: str | None = None
 
 class ResumeData(BaseModel):
     id: str
     personal_info: PersonalInfo
-    experience: List[Experience]
+    experience: list[Experience]
     skills: Skills
-    projects: List[Project]
-    education: List[Education]
+    projects: list[Project]
+    education: list[Education]
 
 class ResumeUploadResponse(BaseModel):
     id: str
     status: str
     message: str
-    data: Optional[ResumeData] = None
+    data: ResumeData | None = None
