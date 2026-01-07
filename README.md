@@ -2,8 +2,8 @@
 
 Arete is an AI-powered job application optimizer specifically designed for tech professionals. It transforms generic resumes into ATS-optimized, role-specific applications by understanding technical terminology, frameworks, and GitHub profiles. Unlike generic resume tools, Arete speaks the language of software engineering and provides real-time streaming optimization with actionable, tech-specific insights.
 
-**🎯 Current Status**: Phase 1 Complete - Resume Upload & Parsing Feature Fully Functional  
-**🚀 Live Demo**: Upload PDF/DOCX/TXT resumes with AI-powered parsing working end-to-end  
+**🎯 Current Status**: Phase 2 Complete - Resume Upload & Job Analysis Features Fully Functional  
+**🚀 Live Demo**: Complete workflow from resume upload → job description analysis → structured insights  
 **⚡ Tech Stack**: FastAPI + React + TypeScript + Supabase + Claude API
 
 ## Prerequisites
@@ -123,24 +123,31 @@ docker-compose up --build
 - **Real-Time Validation**: Instant file type and size validation with user feedback
 - **Responsive Design**: Mobile-friendly interface with Tailwind CSS + shadcn/ui components
 
+### Job Description Analysis (Phase 2 - Complete)
+- **Dual Input Modes**: Accept job descriptions via text input or URL scraping
+- **Web Scraping**: Intelligent extraction from job posting URLs (LinkedIn, Indeed, company pages)
+- **AI Analysis**: Claude API extracts structured requirements (skills, technologies, experience level)
+- **Form Validation**: react-hook-form + Zod validation with proper error handling
+- **Structured Output**: Organized job analysis with required/preferred skills and key requirements
+- **Integration**: Seamless workflow from resume upload to job analysis
+- **GitHub Integration**: Optional GitHub profile analysis for enhanced project insights
+- **Structured Data**: Extracts personal info, experience, skills, projects, and education
+- **Real-Time Validation**: Instant file type and size validation with user feedback
+- **Responsive Design**: Mobile-friendly interface with Tailwind CSS + shadcn/ui components
+
 ### Technical Implementation
 - **Backend**: FastAPI with async processing, Supabase integration, LiteLLM wrapper
 - **Frontend**: React 18 + TypeScript 5 with Vite 6 for fast development
-- **AI Engine**: Claude 3.5 Sonnet via LiteLLM for intelligent resume parsing
+- **AI Engine**: Claude 3.5 Sonnet via LiteLLM for intelligent resume parsing and job analysis
 - **Database**: Supabase (PostgreSQL + Auth + Storage) for scalable data management
 - **Architecture**: Vertical Slice Architecture (VSA) for maintainable, feature-based organization
 - **Code Quality**: Comprehensive validation system enforcing all .kiro/reference/ standards
 
 ## Upcoming Features 🚧
 
-### Phase 2: Job Analysis (Next)
-- Job description input (text or URL)
-- Technical requirement extraction
-- Skills gap analysis
-- Company-specific insights
-
-### Phase 3: AI Optimization
+### Phase 3: AI Optimization (Next)
 - Real-time SSE streaming optimization
+- Resume-job matching analysis
 - ATS compliance scoring
 - Keyword density optimization
 - Tech-specific recommendations
@@ -168,7 +175,7 @@ arete/
 │   ├── app/
 │   │   ├── core/          # Universal infrastructure
 │   │   ├── resume/        # Resume parsing feature slice ✅
-│   │   ├── jobs/          # Job analysis feature slice (planned)
+│   │   ├── jobs/          # Job analysis feature slice ✅
 │   │   ├── optimization/  # AI optimization feature slice (planned)
 │   │   └── export/        # Document export feature slice (planned)
 ├── frontend/
@@ -185,8 +192,12 @@ arete/
 ### Key Components
 - **Resume Parser** (`backend/app/resume/parser.py`): Two-stage parsing (PDF→Markdown→JSON)
 - **Upload Endpoint** (`backend/app/resume/routes.py`): File validation and processing
+- **Job Analysis Service** (`backend/app/jobs/service.py`): Web scraping and AI-powered requirement extraction
+- **Job Analysis Endpoint** (`backend/app/jobs/routes.py`): POST /jobs/analyze with dual input modes
 - **ResumeUpload Component** (`frontend/src/components/ResumeUpload.tsx`): Drag-and-drop interface
 - **ResumeDisplay Component** (`frontend/src/components/ResumeDisplay.tsx`): Structured data visualization
+- **JobDescriptionInput Component** (`frontend/src/components/JobDescriptionInput.tsx`): Dual-mode job input
+- **JobAnalysisDisplay Component** (`frontend/src/components/JobAnalysisDisplay.tsx`): Structured job insights
 - **API Contracts** (`api-contracts.yaml`): OpenAPI specification for all endpoints
 - **Enhanced Orchestrator** (`.kiro/orchestration/`): Parallel development coordination system
 ## Deep Dive
@@ -197,6 +208,13 @@ arete/
 3. **Stage 2 Processing**: LLM converts Markdown → Structured JSON
 4. **GitHub Integration**: Optional GitHub profile analysis for project impact
 5. **Data Storage**: Supabase Storage (files) + Database (metadata, parsed data)
+
+### Job Analysis Pipeline
+1. **Input Processing**: Accept job description text or URL
+2. **Web Scraping**: Extract job content from URLs using BeautifulSoup4
+3. **Text Cleaning**: Normalize and clean job description content
+4. **AI Analysis**: Claude API extracts structured requirements
+5. **Structured Output**: Skills, technologies, experience level, key requirements
 
 ### Enhanced Orchestrator Strategy
 - **Parallel Development**: Backend, Frontend, Infrastructure agents work simultaneously

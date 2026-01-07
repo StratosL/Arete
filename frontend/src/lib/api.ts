@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { ResumeUploadResponse } from '@/types';
+import { ResumeUploadResponse, JobAnalysisRequest, JobAnalysisResponse } from '@/types';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
@@ -22,6 +22,13 @@ export const resumeApi = {
       },
     });
 
+    return response.data;
+  },
+};
+
+export const jobsApi = {
+  analyzeJob: async (data: JobAnalysisRequest): Promise<JobAnalysisResponse> => {
+    const response = await apiClient.post<JobAnalysisResponse>('/jobs/analyze', data);
     return response.data;
   },
 };

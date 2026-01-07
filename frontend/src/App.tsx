@@ -1,18 +1,26 @@
 import { useState } from 'react';
 import { ResumeUpload } from './components/ResumeUpload';
 import { ResumeDisplay } from './components/ResumeDisplay';
-import { ResumeData } from './types';
+import { JobDescriptionInput } from './components/JobDescriptionInput';
+import { JobAnalysisDisplay } from './components/JobAnalysisDisplay';
+import { ResumeData, JobAnalysis } from './types';
 import './App.css';
 
 function App() {
   const [resumeData, setResumeData] = useState<ResumeData | null>(null);
+  const [jobAnalysis, setJobAnalysis] = useState<JobAnalysis | null>(null);
 
   const handleUploadSuccess = (data: ResumeData) => {
     setResumeData(data);
   };
 
+  const handleJobAnalysisSuccess = (analysis: JobAnalysis) => {
+    setJobAnalysis(analysis);
+  };
+
   const handleReset = () => {
     setResumeData(null);
+    setJobAnalysis(null);
   };
 
   return (
@@ -29,7 +37,7 @@ function App() {
                 onClick={handleReset}
                 className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition-colors"
               >
-                Upload New Resume
+                Start Over
               </button>
             )}
           </div>
@@ -39,8 +47,20 @@ function App() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {!resumeData ? (
           <ResumeUpload onUploadSuccess={handleUploadSuccess} />
+        ) : !jobAnalysis ? (
+          <div className="space-y-8">
+            <ResumeDisplay resumeData={resumeData} />
+            <div className="border-t pt-8">
+              <JobDescriptionInput onAnalysisSuccess={handleJobAnalysisSuccess} />
+            </div>
+          </div>
         ) : (
-          <ResumeDisplay resumeData={resumeData} />
+          <div className="space-y-8">
+            <ResumeDisplay resumeData={resumeData} />
+            <div className="border-t pt-8">
+              <JobAnalysisDisplay jobAnalysis={jobAnalysis} />
+            </div>
+          </div>
         )}
       </main>
 

@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
 from app.resume.routes import router as resume_router
+from app.jobs.routes import router as jobs_router
 
 app = FastAPI(
     title="Arete API",
@@ -21,6 +22,7 @@ app.add_middleware(
 
 # Include routers
 app.include_router(resume_router)
+app.include_router(jobs_router)
 
 @app.get("/")
 async def root() -> dict[str, str]:

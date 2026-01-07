@@ -52,3 +52,26 @@ export interface ResumeUploadResponse {
   message: string;
   data?: ResumeData;
 }
+
+export interface JobAnalysisRequest {
+  job_text?: string;
+  job_url?: string;
+}
+
+export interface JobAnalysis {
+  id: string;
+  title: string;
+  company: string;
+  required_skills: string[];
+  preferred_skills: string[];
+  technologies: string[];
+  experience_level: string;
+  key_requirements: string[];
+}
+
+export interface JobAnalysisResponse {
+  id: string;
+  status: string;
+  message: string;
+  data?: JobAnalysis;
+}
