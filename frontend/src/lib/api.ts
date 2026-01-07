@@ -27,8 +27,8 @@ export const resumeApi = {
 };
 
 export const jobsApi = {
-  analyzeJob: async (data: JobAnalysisRequest): Promise<JobAnalysisResponse> => {
-    const response = await apiClient.post<JobAnalysisResponse>('/jobs/analyze', data);
+  analyzeJob: async (data: JobAnalysisRequest): Promise<JobAnalysis> => {
+    const response = await apiClient.post<JobAnalysis>('/jobs/analyze', data);
     return response.data;
   },
 };

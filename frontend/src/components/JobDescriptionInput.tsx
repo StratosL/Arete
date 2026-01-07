@@ -8,7 +8,7 @@ import { JobAnalysis, JobAnalysisRequest } from '@/types';
 
 const jobAnalysisSchema = z.object({
   job_text: z.string().optional(),
-  job_url: z.string().url().optional(),
+  job_url: z.string().url().optional().or(z.literal('')),
 }).refine(
   (data) => data.job_text || data.job_url,
   { message: "Either job text or URL is required" }
@@ -29,7 +29,7 @@ export const JobDescriptionInput = ({ onAnalysisSuccess }: JobDescriptionInputPr
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const { control, handleSubmit, formState: { errors }, reset } = useForm<JobAnalysisForm>({
+  const { control, handleSubmit, formState: { errors }, reset, setValue } = useForm<JobAnalysisForm>({
     resolver: zodResolver(jobAnalysisSchema),
     defaultValues: {
       job_text: '',
@@ -37,7 +37,20 @@ export const JobDescriptionInput = ({ onAnalysisSuccess }: JobDescriptionInputPr
     },
   });
 
+  // Clear the inactive field when switching tabs
+  const handleTabChange = (tab: 'text' | 'url') => {
+    setActiveTab(tab);
+    if (tab === 'text') {
+      setValue('job_url', '');
+    } else {
+      setValue('job_text', '');
+    }
+  };
+
   const onSubmit = async (data: JobAnalysisForm) => {
+    console.log('Form submitted with data:', data);
+    console.log('Active tab:', activeTab);
+    
     setIsAnalyzing(true);
     setError(null);
 
@@ -46,15 +59,13 @@ export const JobDescriptionInput = ({ onAnalysisSuccess }: JobDescriptionInputPr
         ? { job_text: data.job_text }
         : { job_url: data.job_url };
 
+      console.log('Sending request:', requestData);
       const response = await jobsApi.analyzeJob(requestData);
       
-      if (response.status === 'success' && response.data) {
-        onAnalysisSuccess(response.data);
-        reset();
-      } else {
-        setError(response.message || 'Analysis failed');
-      }
+      onAnalysisSuccess(response);
+      reset();
     } catch (err: any) {
+      console.error('Analysis error:', err);
       setError(err.response?.data?.detail || 'Analysis failed. Please try again.');
     } finally {
       setIsAnalyzing(false);
@@ -72,7 +83,7 @@ export const JobDescriptionInput = ({ onAnalysisSuccess }: JobDescriptionInputPr
       <div className="flex space-x-1 bg-gray-100 p-1 rounded-lg">
         <button
           type="button"
-          onClick={() => setActiveTab('text')}
+          onClick={() => handleTabChange('text')}
           className={`flex-1 flex items-center justify-center space-x-2 py-2 px-4 rounded-md font-medium transition-colors ${
             activeTab === 'text'
               ? 'bg-white text-blue-600 shadow-sm'
@@ -84,7 +95,7 @@ export const JobDescriptionInput = ({ onAnalysisSuccess }: JobDescriptionInputPr
         </button>
         <button
           type="button"
-          onClick={() => setActiveTab('url')}
+          onClick={() => handleTabChange('url')}
           className={`flex-1 flex items-center justify-center space-x-2 py-2 px-4 rounded-md font-medium transition-colors ${
             activeTab === 'url'
               ? 'bg-white text-blue-600 shadow-sm'
@@ -168,7 +179,27 @@ export const JobDescriptionInput = ({ onAnalysisSuccess }: JobDescriptionInputPr
 
         {/* Submit Button */}
         <button
-          type="submit"
+          type="button"
+          onClick={() => {
+            console.log('BUTTON CLICKED - TEST');
+            
+            // Get current form values
+            const formData = control._formValues;
+            console.log('Current form values:', JSON.stringify(formData, null, 2));
+            console.log('Form errors:', JSON.stringify(errors, null, 2));
+            console.log('Active tab:', activeTab);
+            
+            // Try to trigger validation manually
+            handleSubmit(
+              (data) => {
+                console.log('Form validation PASSED, data:', JSON.stringify(data, null, 2));
+                onSubmit(data);
+              },
+              (errors) => {
+                console.log('Form validation FAILED, errors:', JSON.stringify(errors, null, 2));
+              }
+            )();
+          }}
           disabled={isAnalyzing}
           className={`w-full py-3 px-4 rounded-md font-medium transition-colors ${
             isAnalyzing
