@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
 from app.jobs.routes import router as jobs_router
+from app.optimization.routes import router as optimization_router
 from app.resume.routes import router as resume_router
 
 app = FastAPI(
@@ -23,6 +24,7 @@ app.add_middleware(
 # Include routers
 app.include_router(resume_router)
 app.include_router(jobs_router)
+app.include_router(optimization_router)
 
 @app.get("/")
 async def root() -> dict[str, str]:

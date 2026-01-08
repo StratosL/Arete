@@ -1,0 +1,62 @@
+import json
+from fastapi import APIRouter, HTTPException
+from fastapi.responses import StreamingResponse
+
+from app.core.database import get_supabase_service_client
+from app.optimization.schemas import OptimizationRequest
+from app.optimization.service import optimization_service
+
+router = APIRouter(prefix="/optimize", tags=["optimization"])
+
+
+@router.post("")
+async def optimize_resume(request: OptimizationRequest):
+    """Optimize resume for job with SSE streaming"""
+    
+    try:
+        supabase = get_supabase_service_client()
+        
+        # Fetch resume data
+        resume_response = (
+            supabase.table("resumes")
+            .select("*")
+            .eq("id", request.resume_id)
+            .execute()
+        )
+        if not resume_response.data:
+            raise HTTPException(status_code=404, detail="Resume not found")
+        
+        resume_record = resume_response.data[0]
+        resume_data = resume_record.get("parsed_data", {})
+        
+        # Fetch job analysis data
+        job_response = supabase.table("job_analyses").select("*").eq("id", request.job_id).execute()
+        if not job_response.data:
+            raise HTTPException(status_code=404, detail="Job analysis not found")
+        
+        job_record = job_response.data[0]
+        job_analysis = job_record.get("analysis_data", {})
+        
+        # Stream optimization
+        async def generate_sse():
+            async for progress in optimization_service.optimize_resume(resume_data, job_analysis):
+                # Format as SSE
+                data = progress.model_dump_json()
+                yield f"data: {data}\n\n"
+            
+            # Send completion signal
+            yield "data: [DONE]\n\n"
+        
+        return StreamingResponse(
+            generate_sse(),
+            media_type="text/event-stream",
+            headers={
+                "Cache-Control": "no-cache",
+                "Connection": "keep-alive",
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Headers": "*",
+            }
+        )
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Optimization failed: {str(e)}")

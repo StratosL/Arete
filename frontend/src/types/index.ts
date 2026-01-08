@@ -75,3 +75,25 @@ export interface JobAnalysisResponse {
   message: string;
   data?: JobAnalysis;
 }
+
+export interface OptimizationRequest {
+  resume_id: string;
+  job_id: string;
+}
+
+export interface OptimizationSuggestion {
+  section: string;
+  type: string;
+  original: string;
+  suggested: string;
+  reason: string;
+  impact: string;
+}
+
+export interface OptimizationProgress {
+  step: string;
+  progress: number;
+  message: string;
+  suggestions: OptimizationSuggestion[];
+  completed: boolean;
+}

@@ -3,6 +3,7 @@ import { ResumeUpload } from './components/ResumeUpload';
 import { ResumeDisplay } from './components/ResumeDisplay';
 import { JobDescriptionInput } from './components/JobDescriptionInput';
 import { JobAnalysisDisplay } from './components/JobAnalysisDisplay';
+import { OptimizationDisplay } from './components/OptimizationDisplay';
 import { ResumeData, JobAnalysis } from './types';
 import './App.css';
 
@@ -59,6 +60,9 @@ function App() {
             <ResumeDisplay resumeData={resumeData} />
             <div className="border-t pt-8">
               <JobAnalysisDisplay jobAnalysis={jobAnalysis} />
+            </div>
+            <div className="border-t pt-8">
+              <OptimizationDisplay resumeData={resumeData} jobAnalysis={jobAnalysis} />
             </div>
           </div>
         )}
