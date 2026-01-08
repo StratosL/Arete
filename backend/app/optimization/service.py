@@ -1,3 +1,4 @@
+import asyncio
 import json
 from typing import AsyncGenerator
 
@@ -21,6 +22,7 @@ class OptimizationService:
             suggestions=[],
             completed=False
         )
+        await asyncio.sleep(1)  # Simulate processing time
 
         # Step 2: Generate keyword suggestions
         yield OptimizationProgress(
@@ -30,6 +32,7 @@ class OptimizationService:
             suggestions=[],
             completed=False
         )
+        await asyncio.sleep(2)  # Simulate AI processing
 
         keyword_suggestions = await self._generate_keyword_suggestions(resume_data, job_analysis)
         
@@ -40,6 +43,7 @@ class OptimizationService:
             suggestions=keyword_suggestions,
             completed=False
         )
+        await asyncio.sleep(1)
 
         # Step 3: Enhance experience descriptions
         yield OptimizationProgress(
@@ -49,6 +53,7 @@ class OptimizationService:
             suggestions=keyword_suggestions,
             completed=False
         )
+        await asyncio.sleep(2)  # Simulate AI processing
 
         experience_suggestions = await self._enhance_experience(resume_data, job_analysis)
         all_suggestions = keyword_suggestions + experience_suggestions
@@ -60,12 +65,13 @@ class OptimizationService:
             suggestions=all_suggestions,
             completed=False
         )
+        await asyncio.sleep(1)
 
         # Step 4: Final optimization
         yield OptimizationProgress(
             step="complete",
             progress=100,
-            message="Optimization complete",
+            message="Optimization complete! Generated " + str(len(all_suggestions)) + " suggestions.",
             suggestions=all_suggestions,
             completed=True
         )

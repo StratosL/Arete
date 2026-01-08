@@ -9,8 +9,8 @@ from app.optimization.service import optimization_service
 router = APIRouter(prefix="/optimize", tags=["optimization"])
 
 
-@router.post("")
-async def optimize_resume(request: OptimizationRequest):
+@router.get("")
+async def optimize_resume(resume_id: str, job_id: str):
     """Optimize resume for job with SSE streaming"""
     
     try:
@@ -20,7 +20,7 @@ async def optimize_resume(request: OptimizationRequest):
         resume_response = (
             supabase.table("resumes")
             .select("*")
-            .eq("id", request.resume_id)
+            .eq("id", resume_id)
             .execute()
         )
         if not resume_response.data:
@@ -30,12 +30,12 @@ async def optimize_resume(request: OptimizationRequest):
         resume_data = resume_record.get("parsed_data", {})
         
         # Fetch job analysis data
-        job_response = supabase.table("job_analyses").select("*").eq("id", request.job_id).execute()
+        job_response = supabase.table("jobs").select("*").eq("id", job_id).execute()
         if not job_response.data:
             raise HTTPException(status_code=404, detail="Job analysis not found")
         
         job_record = job_response.data[0]
-        job_analysis = job_record.get("analysis_data", {})
+        job_analysis = job_record.get("analysis", {})
         
         # Stream optimization
         async def generate_sse():
