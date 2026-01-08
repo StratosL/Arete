@@ -21,17 +21,23 @@ if not exist .env (
 
 echo ✅ Found .env file
 
-REM Check if Python is available
-python --version >nul 2>&1
-if %errorlevel% neq 0 (
-    echo ❌ Error: Python not found
-    echo    Please install Python from https://python.org
-    echo    Make sure to check "Add Python to PATH" during installation
-    echo.
-    goto :error
+REM Check if Python is available (try python3 first for WSL2, then python)
+python3 --version >nul 2>&1
+if %errorlevel% equ 0 (
+    set PYTHON_CMD=python3
+    echo ✅ Python3 is available
+) else (
+    python --version >nul 2>&1
+    if %errorlevel% neq 0 (
+        echo ❌ Error: Python not found
+        echo    Please install Python from https://python.org
+        echo    Make sure to check "Add Python to PATH" during installation
+        echo.
+        goto :error
+    )
+    set PYTHON_CMD=python
+    echo ✅ Python is available
 )
-
-echo ✅ Python is available
 
 REM Install dependencies and run setup using Python
 echo.
@@ -39,7 +45,7 @@ echo 📦 Installing dependencies and running setup...
 echo.
 
 REM Use Python to handle everything (more reliable than batch parsing)
-python -c "
+%PYTHON_CMD% -c "
 import subprocess
 import sys
 import os
@@ -54,16 +60,19 @@ def run_command(cmd, description):
         print(f'❌ {description} failed: {e.stderr}')
         return False
 
+# Get Python command from environment
+python_cmd = os.environ.get('PYTHON_CMD', 'python3')
+
 # Install Python dependencies
-if not run_command('pip install supabase python-dotenv litellm', 'Installing Python dependencies'):
+if not run_command(f'{python_cmd} -m pip install --break-system-packages supabase python-dotenv litellm', 'Installing Python dependencies'):
     sys.exit(1)
 
 # Run environment validation
-if not run_command('python scripts/validate_env.py', 'Validating environment'):
+if not run_command(f'{python_cmd} scripts/validate_env.py', 'Validating environment'):
     sys.exit(1)
 
 # Run Supabase setup
-if not run_command('python scripts/setup_supabase.py', 'Setting up Supabase'):
+if not run_command(f'{python_cmd} scripts/setup_supabase.py', 'Setting up Supabase'):
     sys.exit(1)
 
 print()
@@ -73,7 +82,7 @@ print('🚀 You can now start the application:')
 print('   docker-compose up --build')
 print()
 print('📝 Or run individual services:')
-print('   Backend:  cd backend && python -m uvicorn main:app --reload --host 0.0.0.0 --port 8000')
+print(f'   Backend:  cd backend && {python_cmd} -m uvicorn main:app --reload --host 0.0.0.0 --port 8000')
 print('   Frontend: cd frontend && npm run dev')
 "
 

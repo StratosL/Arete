@@ -25,12 +25,12 @@ echo "✅ Environment variables configured"
 # Install Python dependencies for setup script
 echo "📦 Installing Python dependencies..."
 cd backend
-python -m pip install supabase python-dotenv
+python3 -m pip install --break-system-packages supabase python-dotenv
 cd ..
 
 # Run Supabase setup
 echo "🗄️  Setting up Supabase..."
-python scripts/setup_supabase.py
+python3 scripts/setup_supabase.py
 
 echo ""
 echo "✅ Setup completed successfully!"
@@ -39,5 +39,5 @@ echo "🚀 You can now start the application:"
 echo "   docker-compose up --build"
 echo ""
 echo "📝 Or run individual services:"
-echo "   Backend:  cd backend && uvicorn main:app --reload --host 0.0.0.0 --port 8000"
+echo "   Backend:  cd backend && python3 -m uvicorn main:app --reload --host 0.0.0.0 --port 8000"
 echo "   Frontend: cd frontend && npm run dev"
