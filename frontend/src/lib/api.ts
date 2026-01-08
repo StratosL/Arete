@@ -50,4 +50,26 @@ export const optimizationApi = {
   },
 };
 
+export const exportApi = {
+  exportResume: async (resumeId: string, format: 'pdf' | 'docx'): Promise<void> => {
+    const response = await apiClient.post(`/export/${format}`, 
+      { resume_id: resumeId },
+      { responseType: 'blob' }
+    );
+    
+    const blob = new Blob([response.data], {
+      type: format === 'pdf' ? 'application/pdf' : 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    });
+    
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `resume.${format}`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+  },
+};
+
 export default apiClient;
