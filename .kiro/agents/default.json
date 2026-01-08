@@ -26,6 +26,10 @@
   "hooks": {
     "agentSpawn": [
       {
+        "command": "bash .kiro/scripts/validate-research.sh",
+        "timeout_ms": 5000
+      },
+      {
         "command": "bash .kiro/scripts/orchestrator-status.sh",
         "timeout_ms": 10000
       },
@@ -38,6 +42,10 @@
       {
         "matcher": "use_subagent",
         "command": "bash .kiro/scripts/check-devlog-update.sh"
+      },
+      {
+        "matcher": "write",
+        "command": "bash .kiro/scripts/sync-documentation.sh"
       }
     ]
   },

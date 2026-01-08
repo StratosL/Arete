@@ -5,11 +5,19 @@
 ### Before Any Agent Executes Code
 
 #### ✅ Mandatory Validation Points
-1. **Workflow Compliance**: Agent must show @prime → @plan → @execute → @review steps
-2. **Contract Adherence**: Plan must align with api-contracts.yaml specifications
-3. **VSA Pattern**: Implementation must follow Vertical Slice Architecture
-4. **Standards Compliance**: Code must follow .kiro/reference/ standards
-5. **Integration Points**: Clear handoff procedures with other agents
+1. **User Approval**: Must have explicit user permission FIRST
+2. **Research Protocol**: Must complete current state verification FIRST
+3. **Workflow Compliance**: Agent must show @prime → @plan → @execute → @review steps
+4. **Contract Adherence**: Plan must align with api-contracts.yaml specifications
+5. **VSA Pattern**: Implementation must follow Vertical Slice Architecture
+6. **Standards Compliance**: Code must follow .kiro/reference/ standards
+7. **Integration Points**: Clear handoff procedures with other agents
+
+#### ✅ Research Requirements (MANDATORY)
+- **Current State Verified**: Actual codebase implementation status confirmed
+- **Gap Analysis**: Specific missing pieces identified (not assumed)
+- **No Assumptions**: Documentation alone is insufficient for planning
+- **Evidence-Based**: All plans must reference actual code findings
 
 #### ✅ Plan Quality Criteria
 - **Specific Steps**: Detailed implementation steps (not vague descriptions)
