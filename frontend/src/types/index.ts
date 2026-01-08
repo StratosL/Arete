@@ -88,6 +88,7 @@ export interface OptimizationSuggestion {
   suggested: string;
   reason: string;
   impact: string;
+  accepted?: boolean;
 }
 
 export interface OptimizationProgress {

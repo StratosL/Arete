@@ -48,6 +48,13 @@ export const optimizationApi = {
       job_id: data.job_id,
     };
   },
+
+  saveOptimization: async (resumeId: string, suggestions: any[]): Promise<void> => {
+    await apiClient.post('/optimize/save', {
+      resume_id: resumeId,
+      suggestions: suggestions.filter(s => s.accepted)
+    });
+  },
 };
 
 export const exportApi = {

@@ -7,6 +7,12 @@ class OptimizationRequest(BaseModel):
     job_id: str
 
 
+class SaveOptimizationRequest(BaseModel):
+    """Request model for saving optimization results"""
+    resume_id: str
+    optimized_data: dict
+
+
 class OptimizationSuggestion(BaseModel):
     """Individual optimization suggestion"""
     section: str  # "experience", "skills", "projects", etc.

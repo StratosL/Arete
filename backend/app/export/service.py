@@ -27,7 +27,9 @@ class ExportService:
         if not result.data:
             raise ValueError(f"Resume {resume_id} not found")
         
-        resume_data = result.data[0]["parsed_data"]
+        resume_record = result.data[0]
+        # Use optimized data if available, otherwise fall back to parsed data
+        resume_data = resume_record.get("optimized_data") or resume_record["parsed_data"]
         
         if format == "pdf":
             return await self._generate_pdf(resume_data, resume_id)

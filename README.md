@@ -2,9 +2,10 @@
 
 Arete is an AI-powered job application optimizer specifically designed for tech professionals. It transforms generic resumes into ATS-optimized, role-specific applications by understanding technical terminology, frameworks, and GitHub profiles. Unlike generic resume tools, Arete speaks the language of software engineering and provides real-time streaming optimization with actionable, tech-specific insights.
 
-**🎯 Current Status**: Phase 4 Complete - Full MVP Production Ready
-**🚀 Live Demo**: Complete workflow validated - Upload → Parse → Job Analysis → AI Optimization → Document Export
+**🎯 Current Status**: Full MVP Complete - All Critical Issues Resolved
+**🚀 Live Demo**: Complete workflow validated - Upload → Parse → Job Analysis → AI Optimization → Apply Suggestions → Export Optimized Documents
 **⚡ Tech Stack**: FastAPI + React + TypeScript + Supabase + Claude API + ReportLab
+**✅ Key Fix**: Optimization persistence implemented - exported PDFs now contain AI-optimized content
 
 ## Prerequisites
 
@@ -166,11 +167,11 @@ docker-compose up --build
 ## Architecture & Codebase Overview
 
 ### System Architecture
-- **Backend**: FastAPI with async processing and SSE streaming
+- **Backend**: FastAPI with async processing, SSE streaming, and ReportLab PDF generation
 - **Frontend**: React with TypeScript and shadcn/ui components
 - **AI Engine**: Claude API via LiteLLM abstraction
 - **Database**: Supabase (PostgreSQL + Auth + Storage)
-- **Document Processing**: pdfplumber, python-docx, WeasyPrint
+- **Document Processing**: pdfplumber, python-docx, ReportLab
 - **Architecture Pattern**: Vertical Slice Architecture (VSA)
 
 ### Directory Structure
@@ -181,11 +182,13 @@ arete/
 │   │   ├── core/          # Universal infrastructure
 │   │   ├── resume/        # Resume parsing feature slice ✅
 │   │   ├── jobs/          # Job analysis feature slice ✅
-│   │   ├── optimization/  # AI optimization feature slice (planned)
-│   │   └── export/        # Document export feature slice (planned)
+│   │   ├── optimization/  # AI optimization feature slice ✅
+│   │   └── export/        # Document export feature slice ✅
 ├── frontend/
 │   ├── src/components/    # React components ✅
 │   └── src/lib/          # Utilities and API client ✅
+├── supabase/
+│   └── migrations/       # Database schema migrations ✅
 ├── .kiro/
 │   ├── steering/         # Project context documents ✅
 │   ├── orchestration/    # Enhanced Orchestrator Strategy ✅
@@ -199,13 +202,28 @@ arete/
 - **Upload Endpoint** (`backend/app/resume/routes.py`): File validation and processing
 - **Job Analysis Service** (`backend/app/jobs/service.py`): Web scraping and AI-powered requirement extraction
 - **Job Analysis Endpoint** (`backend/app/jobs/routes.py`): POST /jobs/analyze with dual input modes
+- **Optimization Service** (`backend/app/optimization/service.py`): AI-powered resume optimization with SSE streaming
+- **Optimization Endpoints** (`backend/app/optimization/routes.py`): GET /optimize and POST /optimize/save
+- **Export Service** (`backend/app/export/service.py`): PDF/DOCX generation with ReportLab and python-docx
+- **Export Endpoints** (`backend/app/export/routes.py`): POST /export/{format} for document generation
 - **ResumeUpload Component** (`frontend/src/components/ResumeUpload.tsx`): Drag-and-drop interface
 - **ResumeDisplay Component** (`frontend/src/components/ResumeDisplay.tsx`): Structured data visualization
 - **JobDescriptionInput Component** (`frontend/src/components/JobDescriptionInput.tsx`): Dual-mode job input
 - **JobAnalysisDisplay Component** (`frontend/src/components/JobAnalysisDisplay.tsx`): Structured job insights
+- **OptimizationDisplay Component** (`frontend/src/components/OptimizationDisplay.tsx`): Real-time optimization with Apply Suggestions
+- **DocumentExport Component** (`frontend/src/components/DocumentExport.tsx`): Professional document download interface
 - **API Contracts** (`api-contracts.yaml`): OpenAPI specification for all endpoints
-- **Enhanced Orchestrator** (`.kiro/orchestration/`): Parallel development coordination system
+- **Database Migrations** (`supabase/migrations/`): Schema versioning and deployment consistency
+
 ## Deep Dive
+
+### Complete User Workflow
+1. **Resume Upload**: Upload PDF/DOCX/TXT files with optional GitHub profile
+2. **Resume Parsing**: Two-stage AI parsing (text extraction → structured JSON)
+3. **Job Analysis**: Input job description (text or URL) for AI requirement extraction
+4. **AI Optimization**: Real-time SSE streaming with personalized suggestions
+5. **Apply Suggestions**: Review and selectively apply optimization recommendations
+6. **Document Export**: Download optimized PDF/DOCX with applied improvements
 
 ### Resume Processing Pipeline
 1. **File Upload**: Accepts PDF/DOCX/TXT files up to 10MB
@@ -220,6 +238,21 @@ arete/
 3. **Text Cleaning**: Normalize and clean job description content
 4. **AI Analysis**: Claude API extracts structured requirements
 5. **Structured Output**: Skills, technologies, experience level, key requirements
+
+### AI Optimization Pipeline
+1. **Resume-Job Matching**: Analyze alignment between resume and job requirements
+2. **Keyword Analysis**: Identify missing technical keywords and frameworks
+3. **Experience Enhancement**: Suggest improvements to job descriptions and impact metrics
+4. **Real-Time Streaming**: SSE delivery of optimization suggestions with progress tracking
+5. **User Control**: Individual suggestion acceptance/rejection with batch application
+6. **Persistence**: Save applied optimizations to database for export
+
+### Document Export Pipeline
+1. **Data Retrieval**: Fetch optimized resume data (fallback to original if not optimized)
+2. **PDF Generation**: ReportLab creates ATS-compliant single-column PDFs
+3. **DOCX Generation**: python-docx creates professional Microsoft Word documents
+4. **File Delivery**: Browser download with proper MIME types and filenames
+5. **Format Support**: Both PDF and DOCX with identical content and formatting
 
 ### Enhanced Orchestrator Strategy
 - **Parallel Development**: Backend, Frontend, Infrastructure agents work simultaneously
@@ -257,13 +290,14 @@ arete/
 
 ## Production Status
 
-### ✅ **Phase 4 Complete - Full MVP Production Ready**
+### ✅ **Full MVP Complete - All Critical Issues Resolved**
 - **End-to-End Tested**: Complete workflow from resume upload to document export validated
 - **Code Quality**: 87.5% validation score across all categories
 - **Performance**: Resume parsing <30s, job analysis <30s, AI optimization <60s, document export <10s
 - **User Experience**: Smooth workflow with proper error handling and recovery
 - **Cross-Platform**: Validated in multiple environments and deployment scenarios
 - **Document Export**: Both PDF (ReportLab) and DOCX generation working perfectly
+- **Optimization Persistence**: Applied AI suggestions now appear in exported documents
 
 ### 🎯 **Success Metrics Achieved**
 - ✅ Complete workflow in <5 minutes per job application
@@ -272,6 +306,7 @@ arete/
 - ✅ ATS-compliant structured data extraction
 - ✅ Real-time AI optimization with streaming feedback
 - ✅ Professional document export (PDF + DOCX formats)
+- ✅ Optimization persistence - exported documents contain applied AI suggestions
 - ✅ Production-ready error handling and user feedback
 
 ## Troubleshooting

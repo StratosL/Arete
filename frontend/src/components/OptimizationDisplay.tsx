@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { ResumeData, JobAnalysis, OptimizationProgress, OptimizationSuggestion } from '@/types';
 import { optimizationApi } from '@/lib/api';
 import { useSSE } from '@/hooks/useSSE';
-import { Zap, CheckCircle, AlertCircle, Loader2, Play, Square, Lightbulb, TrendingUp } from 'lucide-react';
+import { Zap, CheckCircle, AlertCircle, Loader2, Play, Square, Lightbulb, TrendingUp, Check, X, Save } from 'lucide-react';
 
 interface OptimizationDisplayProps {
   resumeData: ResumeData;
@@ -14,6 +14,8 @@ export const OptimizationDisplay = ({ resumeData, jobAnalysis }: OptimizationDis
   const [optimizationUrl, setOptimizationUrl] = useState<string | null>(null);
   const [allSuggestions, setAllSuggestions] = useState<OptimizationSuggestion[]>([]);
   const [currentProgress, setCurrentProgress] = useState<OptimizationProgress | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
 
   const { events, isConnected, error, disconnect } = useSSE(optimizationUrl, {
     onProgress: (progress) => {
@@ -48,6 +50,25 @@ export const OptimizationDisplay = ({ resumeData, jobAnalysis }: OptimizationDis
     disconnect();
     setIsOptimizing(false);
     setOptimizationUrl(null);
+  };
+
+  const toggleSuggestion = (index: number) => {
+    setAllSuggestions(prev => prev.map((s, i) => 
+      i === index ? { ...s, accepted: !s.accepted } : s
+    ));
+  };
+
+  const applySuggestions = async () => {
+    setIsSaving(true);
+    try {
+      await optimizationApi.saveOptimization(resumeData.id, allSuggestions);
+      setSaveSuccess(true);
+      setTimeout(() => setSaveSuccess(false), 3000);
+    } catch (error) {
+      console.error('Failed to save optimizations:', error);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const getImpactColor = (impact: string) => {
@@ -142,9 +163,27 @@ export const OptimizationDisplay = ({ resumeData, jobAnalysis }: OptimizationDis
       {/* Optimization Suggestions */}
       {allSuggestions.length > 0 && (
         <div className="bg-white rounded-lg border border-gray-200 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">
-            Optimization Suggestions ({allSuggestions.length})
-          </h3>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-gray-900">
+              Optimization Suggestions ({allSuggestions.length})
+            </h3>
+            <button
+              onClick={applySuggestions}
+              disabled={isSaving || !allSuggestions.some(s => s.accepted)}
+              className={`flex items-center space-x-2 px-4 py-2 rounded-md font-medium transition-colors ${
+                isSaving || !allSuggestions.some(s => s.accepted)
+                  ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  : saveSuccess
+                  ? 'bg-green-600 text-white'
+                  : 'bg-blue-600 text-white hover:bg-blue-700'
+              }`}
+            >
+              <Save className="w-4 h-4" />
+              <span>
+                {isSaving ? 'Saving...' : saveSuccess ? 'Saved!' : 'Apply Selected'}
+              </span>
+            </button>
+          </div>
           <div className="space-y-4">
             {allSuggestions.map((suggestion, index) => (
               <div key={index} className={`border-l-4 p-4 rounded-r-lg ${getImpactColor(suggestion.impact)}`}>
@@ -155,9 +194,21 @@ export const OptimizationDisplay = ({ resumeData, jobAnalysis }: OptimizationDis
                       {suggestion.section} - {suggestion.type.replace('_', ' ')}
                     </span>
                   </div>
-                  <span className="text-xs text-gray-500 capitalize">
-                    {suggestion.impact} Impact
-                  </span>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-xs text-gray-500 capitalize">
+                      {suggestion.impact} Impact
+                    </span>
+                    <button
+                      onClick={() => toggleSuggestion(index)}
+                      className={`p-1 rounded-full transition-colors ${
+                        suggestion.accepted
+                          ? 'bg-green-100 text-green-600 hover:bg-green-200'
+                          : 'bg-gray-100 text-gray-400 hover:bg-gray-200'
+                      }`}
+                    >
+                      {suggestion.accepted ? <Check className="w-4 h-4" /> : <X className="w-4 h-4" />}
+                    </button>
+                  </div>
                 </div>
                 
                 <div className="space-y-2">

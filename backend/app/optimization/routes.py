@@ -3,7 +3,7 @@ from fastapi import APIRouter, HTTPException
 from fastapi.responses import StreamingResponse
 
 from app.core.database import get_supabase_service_client
-from app.optimization.schemas import OptimizationRequest
+from app.optimization.schemas import OptimizationRequest, SaveOptimizationRequest
 from app.optimization.service import optimization_service
 
 router = APIRouter(prefix="/optimize", tags=["optimization"])
@@ -60,3 +60,21 @@ async def optimize_resume(resume_id: str, job_id: str):
         
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Optimization failed: {str(e)}")
+
+
+@router.post("/save")
+async def save_optimization(request: SaveOptimizationRequest):
+    """Save applied optimization results to resume"""
+    
+    try:
+        supabase = get_supabase_service_client()
+        
+        # Update resume with optimized data
+        supabase.table("resumes").update({
+            "optimized_data": request.optimized_data
+        }).eq("id", request.resume_id).execute()
+        
+        return {"status": "success", "message": "Optimization saved"}
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to save optimization: {str(e)}")

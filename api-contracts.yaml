@@ -71,6 +71,33 @@ paths:
               schema:
                 type: string
 
+  /optimize/save:
+    post:
+      summary: Save applied optimization results
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                resume_id:
+                  type: string
+                optimized_data:
+                  type: object
+                  description: Complete resume data with applied optimizations
+      responses:
+        200:
+          description: Optimization saved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  message:
+                    type: string
+
   /export/{format}:
     post:
       summary: Export optimized resume
