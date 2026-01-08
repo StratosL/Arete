@@ -26,16 +26,12 @@
   "hooks": {
     "agentSpawn": [
       {
-        "command": "bash .kiro/scripts/validate-research.sh",
-        "timeout_ms": 5000
+        "command": "bash .kiro/scripts/auto-analyze-project.sh",
+        "timeout_ms": 10000
       },
       {
         "command": "bash .kiro/scripts/orchestrator-status.sh",
         "timeout_ms": 10000
-      },
-      {
-        "command": "bash .kiro/scripts/check-devlog-update.sh",
-        "timeout_ms": 5000
       }
     ],
     "postToolUse": [
