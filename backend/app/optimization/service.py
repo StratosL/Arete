@@ -68,10 +68,12 @@ class OptimizationService:
         await asyncio.sleep(1)
 
         # Step 4: Final optimization
+        suggestion_count = len(all_suggestions)
+        completion_msg = f"Optimization complete! Generated {suggestion_count} suggestions."
         yield OptimizationProgress(
             step="complete",
             progress=100,
-            message="Optimization complete! Generated " + str(len(all_suggestions)) + " suggestions.",
+            message=completion_msg,
             suggestions=all_suggestions,
             completed=True
         )

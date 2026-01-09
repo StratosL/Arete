@@ -326,7 +326,8 @@ class ExportService:
                     <p>{project['description']}</p>
                 """
                 if project.get("technologies"):
-                    tech_str = f"<strong>Technologies:</strong> {', '.join(project['technologies'])}"
+                    tech_list = ', '.join(project['technologies'])
+                    tech_str = f"<strong>Technologies:</strong> {tech_list}"
                     html += f"<p>{tech_str}</p>"
                 html += "</div>"
             html += "</section>"
@@ -463,7 +464,8 @@ class ExportService:
                 html += f"<h3>{project['name']}</h3>"
                 html += f"<p>{project['description']}</p>"
                 if project.get("technologies"):
-                    html += f"<p><strong>Technologies:</strong> {', '.join(project['technologies'])}</p>"
+                    tech_list = ', '.join(project['technologies'])
+                    html += f"<p><strong>Technologies:</strong> {tech_list}</p>"
         
         # Education
         if resume_data.get("education"):
@@ -546,7 +548,8 @@ class ExportService:
                 html += f"<h3>{project['name']}</h3>"
                 html += f"<p>{project['description']}</p>"
                 if project.get("technologies"):
-                    html += f"<p><strong>Technologies:</strong> {', '.join(project['technologies'])}</p>"
+                    tech_list = ', '.join(project['technologies'])
+                    html += f"<p><strong>Technologies:</strong> {tech_list}</p>"
         
         # Education
         if resume_data.get("education"):
