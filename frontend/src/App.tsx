@@ -5,6 +5,9 @@ import { JobDescriptionInput } from './components/JobDescriptionInput';
 import { JobAnalysisDisplay } from './components/JobAnalysisDisplay';
 import { OptimizationDisplay } from './components/OptimizationDisplay';
 import { DocumentExport } from './components/DocumentExport';
+import { ThemeProvider } from "./components/theme-provider"
+import { ModeToggle } from "./components/mode-toggle"
+import { Button } from "./components/ui/button"
 import { ResumeData, JobAnalysis } from './types';
 import './App.css';
 
@@ -26,60 +29,64 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">Arete</h1>
-              <p className="text-sm text-gray-600">AI-Powered Resume Optimizer for Tech Professionals</p>
+    <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
+      <div className="min-h-screen bg-background font-sans text-foreground">
+        <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div className="flex flex-col">
+              <h1 className="text-2xl font-bold tracking-tight">Arete</h1>
+              <p className="text-xs text-muted-foreground hidden sm:block">AI-Powered Resume Optimizer</p>
             </div>
-            {resumeData && (
-              <button
-                onClick={handleReset}
-                className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition-colors"
-              >
-                Start Over
-              </button>
-            )}
+            <div className="flex items-center gap-4">
+              {resumeData && (
+                <Button
+                  onClick={handleReset}
+                  variant="outline"
+                  size="sm"
+                >
+                  Start Over
+                </Button>
+              )}
+              <ModeToggle />
+            </div>
           </div>
-        </div>
-      </header>
+        </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {!resumeData ? (
-          <ResumeUpload onUploadSuccess={handleUploadSuccess} />
-        ) : !jobAnalysis ? (
-          <div className="space-y-8">
-            <ResumeDisplay resumeData={resumeData} />
-            <div className="border-t pt-8">
-              <JobDescriptionInput onAnalysisSuccess={handleJobAnalysisSuccess} />
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+          {!resumeData ? (
+            <ResumeUpload onUploadSuccess={handleUploadSuccess} />
+          ) : !jobAnalysis ? (
+            <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+              <ResumeDisplay resumeData={resumeData} />
+              <div className="border-t pt-8">
+                <JobDescriptionInput onAnalysisSuccess={handleJobAnalysisSuccess} />
+              </div>
             </div>
-          </div>
-        ) : (
-          <div className="space-y-8">
-            <ResumeDisplay resumeData={resumeData} />
-            <div className="border-t pt-8">
-              <JobAnalysisDisplay jobAnalysis={jobAnalysis} />
+          ) : (
+            <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+              <ResumeDisplay resumeData={resumeData} />
+              <div className="border-t pt-8">
+                <JobAnalysisDisplay jobAnalysis={jobAnalysis} />
+              </div>
+              <div className="border-t pt-8">
+                <OptimizationDisplay resumeData={resumeData} jobAnalysis={jobAnalysis} />
+              </div>
+              <div className="border-t pt-8">
+                <DocumentExport resumeId={resumeData.id} />
+              </div>
             </div>
-            <div className="border-t pt-8">
-              <OptimizationDisplay resumeData={resumeData} jobAnalysis={jobAnalysis} />
-            </div>
-            <div className="border-t pt-8">
-              <DocumentExport resumeId={resumeData.id} />
-            </div>
-          </div>
-        )}
-      </main>
+          )}
+        </main>
 
-      <footer className="bg-white border-t mt-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <p className="text-center text-sm text-gray-500">
-            Arete - Transforming resumes with AI for tech professionals
-          </p>
-        </div>
-      </footer>
-    </div>
+        <footer className="border-t py-6 md:py-0 mt-8">
+          <div className="container flex flex-col items-center justify-between gap-4 md:h-24 md:flex-row mx-auto px-4">
+            <p className="text-center text-sm leading-loose text-muted-foreground md:text-left">
+              Arete - Transforming resumes with AI for tech professionals
+            </p>
+          </div>
+        </footer>
+      </div>
+    </ThemeProvider>
   );
 }
 
