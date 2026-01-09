@@ -49,10 +49,46 @@ export const optimizationApi = {
     };
   },
 
-  saveOptimization: async (resumeId: string, suggestions: any[]): Promise<void> => {
+  saveOptimization: async (resumeId: string, suggestions: any[], resumeData: any): Promise<void> => {
+    // Apply accepted suggestions to create optimized resume data
+    const acceptedSuggestions = suggestions.filter(s => s.accepted);
+    const optimizedData = JSON.parse(JSON.stringify(resumeData)); // Deep clone
+    
+    // Apply each accepted suggestion to the resume data
+    for (const suggestion of acceptedSuggestions) {
+      if (suggestion.section === 'skills' && suggestion.type === 'add_keyword') {
+        // Add new skill
+        if (!optimizedData.skills) optimizedData.skills = { technical: [] };
+        if (!optimizedData.skills.technical) optimizedData.skills.technical = [];
+        if (!optimizedData.skills.technical.includes(suggestion.suggested)) {
+          optimizedData.skills.technical.push(suggestion.suggested);
+        }
+      } else if (suggestion.section === 'experience') {
+        // Update experience descriptions
+        if (optimizedData.experience) {
+          for (const exp of optimizedData.experience) {
+            if (exp.description) {
+              exp.description = exp.description.map((desc: string) =>
+                desc === suggestion.original ? suggestion.suggested : desc
+              );
+            }
+          }
+        }
+      } else if (suggestion.section === 'projects') {
+        // Update project descriptions
+        if (optimizedData.projects) {
+          for (const proj of optimizedData.projects) {
+            if (proj.description === suggestion.original) {
+              proj.description = suggestion.suggested;
+            }
+          }
+        }
+      }
+    }
+    
     await apiClient.post('/optimize/save', {
       resume_id: resumeId,
-      suggestions: suggestions.filter(s => s.accepted)
+      optimized_data: optimizedData
     });
   },
 };

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { ResumeData, JobAnalysis, OptimizationProgress, OptimizationSuggestion } from '@/types';
 import { optimizationApi } from '@/lib/api';
 import { useSSE } from '@/hooks/useSSE';
-import { Zap, CheckCircle, AlertCircle, Loader2, Play, Square, Lightbulb, TrendingUp, Check, X, Save } from 'lucide-react';
+import { Zap, CheckCircle, AlertCircle, Loader2, Play, Square, Lightbulb, TrendingUp, Save } from 'lucide-react';
 
 interface OptimizationDisplayProps {
   resumeData: ResumeData;
@@ -61,7 +61,7 @@ export const OptimizationDisplay = ({ resumeData, jobAnalysis }: OptimizationDis
   const applySuggestions = async () => {
     setIsSaving(true);
     try {
-      await optimizationApi.saveOptimization(resumeData.id, allSuggestions);
+      await optimizationApi.saveOptimization(resumeData.id, allSuggestions, resumeData);
       setSaveSuccess(true);
       setTimeout(() => setSaveSuccess(false), 3000);
     } catch (error) {
@@ -199,12 +199,12 @@ export const OptimizationDisplay = ({ resumeData, jobAnalysis }: OptimizationDis
                     </span>
                     <button
                       onClick={() => toggleSuggestion(index)}
-                      className={`p-1 rounded-full transition-colors ${suggestion.accepted
-                          ? 'bg-green-100 text-green-600 hover:bg-green-200'
-                          : 'bg-gray-100 text-gray-400 hover:bg-gray-200'
+                      className={`px-3 py-1 rounded-md text-xs font-medium transition-colors ${suggestion.accepted
+                          ? 'bg-green-600 text-white hover:bg-green-700'
+                          : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                         }`}
                     >
-                      {suggestion.accepted ? <Check className="w-4 h-4" /> : <X className="w-4 h-4" />}
+                      {suggestion.accepted ? 'Selected' : 'Select this'}
                     </button>
                   </div>
                 </div>

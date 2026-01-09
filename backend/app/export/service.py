@@ -1,4 +1,5 @@
 import io
+import json
 from pathlib import Path
 from reportlab.lib.pagesizes import letter
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
@@ -9,13 +10,212 @@ from docx import Document
 from docx.shared import Inches
 
 from app.core.database import get_supabase_service_client
+from app.core.llm import get_llm_response
 
 
 class ExportService:
     """Handle resume export to PDF and DOCX formats"""
     
+    # Quick-match for common skills (avoids LLM call for obvious cases)
+    KNOWN_SKILLS = {
+        'Languages': {
+            'python', 'javascript', 'typescript', 'java', 'c++', 'c#', 'c',
+            'go', 'rust', 'ruby', 'php', 'swift', 'kotlin', 'scala', 'r', 'sql'
+        },
+        'Frontend': {
+            'react', 'vue', 'angular', 'next.js', 'svelte', 'html', 'css',
+            'tailwind', 'bootstrap', 'sass', 'redux', 'jquery'
+        },
+        'Backend': {
+            'node.js', 'express', 'fastapi', 'django', 'flask', 'spring boot',
+            'rails', 'laravel', 'asp.net', 'graphql', 'rest'
+        },
+        'Databases': {
+            'postgresql', 'mysql', 'mongodb', 'redis', 'elasticsearch',
+            'sqlite', 'oracle', 'dynamodb', 'cassandra', 'supabase', 'firebase'
+        },
+        'Cloud & DevOps': {
+            'aws', 'gcp', 'azure', 'docker', 'kubernetes', 'terraform',
+            'ci/cd', 'jenkins', 'github actions', 'linux', 'nginx'
+        },
+        'Tools': {
+            'git', 'github', 'gitlab', 'jira', 'vs code', 'postman',
+            'figma', 'webpack', 'vite'
+        },
+    }
+    
+    # Skill name normalization
+    SKILL_ALIASES = {
+        'js': 'JavaScript', 'javascript': 'JavaScript',
+        'ts': 'TypeScript', 'typescript': 'TypeScript',
+        'react.js': 'React', 'reactjs': 'React',
+        'vue.js': 'Vue', 'vuejs': 'Vue',
+        'node.js': 'Node.js', 'nodejs': 'Node.js', 'node': 'Node.js',
+        'next.js': 'Next.js', 'nextjs': 'Next.js',
+        'postgres': 'PostgreSQL', 'postgresql': 'PostgreSQL',
+        'mongo': 'MongoDB', 'mongodb': 'MongoDB',
+        'k8s': 'Kubernetes', 'kubernetes': 'Kubernetes',
+        'aws': 'AWS', 'gcp': 'GCP', 'azure': 'Azure',
+    }
+    
+    CATEGORIZATION_PROMPT = """You are a technical skills categorization expert.
+
+Categorize each skill into EXACTLY ONE category. Return JSON only.
+
+Categories:
+- Languages: Programming/scripting languages (Python, Java, C++, SQL, etc.)
+- Frontend: UI frameworks, CSS tools, browser tech (React, Vue, Tailwind, etc.)
+- Backend: Server frameworks, APIs, runtimes (Node.js, Django, Express, etc.)
+- Databases: DBMS, ORMs, data stores, caching (PostgreSQL, Redis, Prisma, etc.)
+- Cloud & DevOps: Cloud providers, CI/CD, containers, IaC (AWS, Docker, K8s, etc.)
+- Tools: Dev tools, IDEs, testing, version control (Git, Jest, Postman, etc.)
+- Other: ONLY for soft skills, methodologies, or non-technical domain knowledge
+
+Rules:
+1. Research unfamiliar technologies before categorizing
+2. ORMs → Databases (Prisma, SQLAlchemy, TypeORM)
+3. Testing frameworks → Tools (Jest, Pytest, Cypress)
+4. "Other" is LAST RESORT - most tech skills fit a category
+5. Normalize names (e.g., "nodejs" → "Node.js", "k8s" → "Kubernetes")
+
+Skills to categorize:
+{skills}
+
+Return ONLY valid JSON in this exact format:
+{{
+  "Languages": ["skill1", "skill2"],
+  "Frontend": ["skill3"],
+  "Backend": [],
+  "Databases": ["skill4"],
+  "Cloud & DevOps": [],
+  "Tools": ["skill5"],
+  "Other": []
+}}"""
+
     def __init__(self):
         self.templates_dir = Path(__file__).parent / "templates"
+    
+    def _normalize_skill(self, skill: str) -> str:
+        """Normalize skill name to canonical form"""
+        skill_lower = skill.lower().strip()
+        return self.SKILL_ALIASES.get(skill_lower, skill.strip())
+    
+    def _quick_categorize(self, skill: str) -> str | None:
+        """Try to categorize skill using known mappings. Returns None if unknown."""
+        skill_lower = skill.lower().strip()
+        for category, skills in self.KNOWN_SKILLS.items():
+            if skill_lower in skills or any(s in skill_lower for s in skills):
+                return category
+        return None
+    
+    async def _llm_categorize_skills(self, skills: list[str]) -> dict[str, list[str]]:
+        """Use LLM to categorize unknown skills"""
+        if not skills:
+            return {}
+        
+        prompt = self.CATEGORIZATION_PROMPT.format(skills=json.dumps(skills))
+        
+        try:
+            response = await get_llm_response([
+                {"role": "user", "content": prompt}
+            ])
+            
+            # Extract JSON from response (handle markdown code blocks)
+            clean_response = response.strip()
+            if "```json" in clean_response:
+                clean_response = clean_response.split("```json")[1]
+                clean_response = clean_response.split("```")[0]
+            elif "```" in clean_response:
+                clean_response = clean_response.split("```")[1]
+                clean_response = clean_response.split("```")[0]
+            
+            json_start = clean_response.find('{')
+            json_end = clean_response.rfind('}') + 1
+            if json_start != -1 and json_end > json_start:
+                raw_result = json.loads(clean_response[json_start:json_end])
+                
+                # Normalize category names from LLM response
+                normalized = {}
+                category_mapping = {
+                    'languages': 'Languages',
+                    'programming languages': 'Languages',
+                    'frontend': 'Frontend',
+                    'front-end': 'Frontend',
+                    'front end': 'Frontend',
+                    'backend': 'Backend',
+                    'back-end': 'Backend',
+                    'back end': 'Backend',
+                    'databases': 'Databases',
+                    'database': 'Databases',
+                    'cloud & devops': 'Cloud & DevOps',
+                    'cloud and devops': 'Cloud & DevOps',
+                    'cloud': 'Cloud & DevOps',
+                    'devops': 'Cloud & DevOps',
+                    'infrastructure': 'Cloud & DevOps',
+                    'tools': 'Tools',
+                    'other': 'Other',
+                    'soft skills': 'Other',
+                    'methodologies': 'Other',
+                }
+                
+                for key, value in raw_result.items():
+                    if isinstance(value, list) and value:
+                        norm_key = category_mapping.get(key.lower(), 'Other')
+                        if norm_key not in normalized:
+                            normalized[norm_key] = []
+                        normalized[norm_key].extend(value)
+                
+                return normalized
+                
+        except Exception as e:
+            print(f"LLM categorization failed: {e}")
+        
+        # Fallback: put all in Other
+        return {"Other": skills}
+    
+    async def _deduplicate_and_categorize_skills(
+        self, skills_dict: dict
+    ) -> dict[str, list[str]]:
+        """Deduplicate skills and categorize using quick-match + LLM fallback"""
+        
+        # Collect and deduplicate all skills
+        all_skills = set()
+        for category in ['technical', 'frameworks', 'tools', 'languages']:
+            for skill in skills_dict.get(category, []):
+                normalized = self._normalize_skill(skill)
+                if normalized.lower() not in {s.lower() for s in all_skills}:
+                    all_skills.add(normalized)
+        
+        # Categorize: quick-match first, collect unknowns for LLM
+        categorized = {
+            'Languages': [], 'Frontend': [], 'Backend': [],
+            'Databases': [], 'Cloud & DevOps': [], 'Tools': [], 'Other': []
+        }
+        unknown_skills = []
+        
+        for skill in all_skills:
+            category = self._quick_categorize(skill)
+            if category:
+                categorized[category].append(skill)
+            else:
+                unknown_skills.append(skill)
+        
+        # LLM categorization for unknown skills
+        if unknown_skills:
+            llm_results = await self._llm_categorize_skills(unknown_skills)
+            for category, skills in llm_results.items():
+                if category in categorized:
+                    categorized[category].extend(skills)
+                else:
+                    categorized['Other'].extend(skills)
+        
+        # Sort each category and remove empty ones
+        result = {}
+        for category, skills in categorized.items():
+            if skills:
+                result[category] = sorted(set(skills), key=str.lower)
+        
+        return result
     
     async def export_resume(self, resume_id: str, format: str) -> tuple[bytes, str, str]:
         """Export resume in specified format"""
@@ -62,6 +262,15 @@ class ExportService:
             spaceBefore=12
         )
         
+        skill_category_style = ParagraphStyle(
+            'SkillCategory',
+            parent=styles['Normal'],
+            fontSize=10,
+            spaceBefore=4,
+            spaceAfter=2,
+            leftIndent=0
+        )
+        
         story = []
         personal = resume_data["personal_info"]
         
@@ -92,19 +301,25 @@ class ExportService:
                     story.append(Paragraph(f"• {desc}", styles['Normal']))
                 story.append(Spacer(1, 6))
         
-        # Skills
+        # Skills - deduplicated and categorized via LLM
         if resume_data.get("skills"):
             story.append(Paragraph("Skills", heading_style))
-            skills = resume_data["skills"]
-            if skills.get("technical"):
-                tech_skills = f"<b>Technical:</b> {', '.join(skills['technical'])}"
-                story.append(Paragraph(tech_skills, styles['Normal']))
-            if skills.get("frameworks"):
-                frameworks = f"<b>Frameworks:</b> {', '.join(skills['frameworks'])}"
-                story.append(Paragraph(frameworks, styles['Normal']))
-            if skills.get("tools"):
-                tools = f"<b>Tools:</b> {', '.join(skills['tools'])}"
-                story.append(Paragraph(tools, styles['Normal']))
+            skills_data = await self._deduplicate_and_categorize_skills(
+                resume_data["skills"]
+            )
+            
+            # Define display order for categories
+            category_order = [
+                'Languages', 'Frontend', 'Backend', 'Databases',
+                'Cloud & DevOps', 'Tools', 'Other'
+            ]
+            
+            for category in category_order:
+                if category in skills_data and skills_data[category]:
+                    skills_list = skills_data[category]
+                    skills_line = f"<b>{category}:</b> {', '.join(skills_list)}"
+                    story.append(Paragraph(skills_line, skill_category_style))
+            
             story.append(Spacer(1, 6))
         
         # Projects
@@ -170,14 +385,18 @@ class ExportService:
                 for desc in exp["description"]:
                     doc.add_paragraph(f"• {desc}")
         
-        # Skills
+        # Skills - deduplicated and categorized via LLM
         if resume_data.get("skills"):
             doc.add_heading("Skills", 1)
-            skills = resume_data["skills"]
-            if skills.get("technical"):
-                doc.add_paragraph(f"Technical: {', '.join(skills['technical'])}")
-            if skills.get("frameworks"):
-                doc.add_paragraph(f"Frameworks: {', '.join(skills['frameworks'])}")
+            skills_data = await self._deduplicate_and_categorize_skills(
+                resume_data["skills"]
+            )
+            
+            for category, skills_list in skills_data.items():
+                if skills_list:
+                    p = doc.add_paragraph()
+                    p.add_run(f"{category}: ").bold = True
+                    p.add_run(', '.join(skills_list))
         
         # Projects
         if resume_data.get("projects"):
