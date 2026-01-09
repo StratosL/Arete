@@ -39,7 +39,7 @@ export const OptimizationDisplay = ({ resumeData, jobAnalysis }: OptimizationDis
       resume_id: resumeData.id,
       job_id: jobAnalysis.id,
     });
-    
+
     setOptimizationUrl(url);
     setIsOptimizing(true);
     setAllSuggestions([]);
@@ -53,7 +53,7 @@ export const OptimizationDisplay = ({ resumeData, jobAnalysis }: OptimizationDis
   };
 
   const toggleSuggestion = (index: number) => {
-    setAllSuggestions(prev => prev.map((s, i) => 
+    setAllSuggestions(prev => prev.map((s, i) =>
       i === index ? { ...s, accepted: !s.accepted } : s
     ));
   };
@@ -97,13 +97,13 @@ export const OptimizationDisplay = ({ resumeData, jobAnalysis }: OptimizationDis
       </div>
 
       {/* Control Panel */}
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
+      <div className="bg-secondary/50 rounded-lg border p-6">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center space-x-2">
             <Zap className="w-5 h-5 text-blue-600" />
             <h3 className="text-lg font-semibold text-gray-900">Optimization Control</h3>
           </div>
-          
+
           {!isOptimizing ? (
             <button
               onClick={startOptimization}
@@ -162,7 +162,7 @@ export const OptimizationDisplay = ({ resumeData, jobAnalysis }: OptimizationDis
 
       {/* Optimization Suggestions */}
       {allSuggestions.length > 0 && (
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
+        <div className="bg-secondary/50 rounded-lg border p-6">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-semibold text-gray-900">
               Optimization Suggestions ({allSuggestions.length})
@@ -170,13 +170,12 @@ export const OptimizationDisplay = ({ resumeData, jobAnalysis }: OptimizationDis
             <button
               onClick={applySuggestions}
               disabled={isSaving || !allSuggestions.some(s => s.accepted)}
-              className={`flex items-center space-x-2 px-4 py-2 rounded-md font-medium transition-colors ${
-                isSaving || !allSuggestions.some(s => s.accepted)
+              className={`flex items-center space-x-2 px-4 py-2 rounded-md font-medium transition-colors ${isSaving || !allSuggestions.some(s => s.accepted)
                   ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                   : saveSuccess
-                  ? 'bg-green-600 text-white'
-                  : 'bg-blue-600 text-white hover:bg-blue-700'
-              }`}
+                    ? 'bg-green-600 text-white'
+                    : 'bg-blue-600 text-white hover:bg-blue-700'
+                }`}
             >
               <Save className="w-4 h-4" />
               <span>
@@ -200,20 +199,19 @@ export const OptimizationDisplay = ({ resumeData, jobAnalysis }: OptimizationDis
                     </span>
                     <button
                       onClick={() => toggleSuggestion(index)}
-                      className={`p-1 rounded-full transition-colors ${
-                        suggestion.accepted
+                      className={`p-1 rounded-full transition-colors ${suggestion.accepted
                           ? 'bg-green-100 text-green-600 hover:bg-green-200'
                           : 'bg-gray-100 text-gray-400 hover:bg-gray-200'
-                      }`}
+                        }`}
                     >
                       {suggestion.accepted ? <Check className="w-4 h-4" /> : <X className="w-4 h-4" />}
                     </button>
                   </div>
                 </div>
-                
+
                 <div className="space-y-2">
                   <p className="text-sm text-gray-600">{suggestion.reason}</p>
-                  
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                     <div>
                       <span className="font-medium text-gray-700">Original:</span>

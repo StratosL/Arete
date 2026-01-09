@@ -32,30 +32,36 @@
   }
 
   .dark {
-    --background: 240 10% 3.9%;
-    --foreground: 0 0% 98%;
-    --card: 240 10% 3.9%;
-    --card-foreground: 0 0% 98%;
-    --popover: 240 10% 3.9%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 240 5.9% 10%;
-    --secondary: 240 3.7% 15.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 240 3.7% 15.9%;
-    --muted-foreground: 240 5% 64.9%;
-    --accent: 240 3.7% 15.9%;
-    --accent-foreground: 0 0% 98%;
+    --background: 60 4% 15%;
+    /* #262624 - 38,38,36 -> Hue ~60deg, Sat ~4%, Light ~15% */
+    --foreground: 50 8% 74%;
+    /* #C2C0B6 - 194,192,182 -> Hue ~50deg, Sat ~8%, Light ~74% */
+    --card: 60 4% 17%;
+    --card-foreground: 50 8% 74%;
+    --popover: 60 4% 17%;
+    --popover-foreground: 50 8% 74%;
+    --primary: 32 60% 77%;
+    /* Staying compatible with the warm tone */
+    --primary-foreground: 30 5% 12%;
+    --secondary: 60 4% 19%;
+    --secondary-foreground: 50 8% 74%;
+    --muted: 60 4% 19%;
+    --muted-foreground: 50 5% 50%;
+    --accent: 60 4% 19%;
+    --accent-foreground: 50 8% 74%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
-    --ring: 240 4.9% 83.9%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
+    --border: 60 4% 20%;
+    --input: 60 4% 20%;
+    --ring: 32 60% 77%;
+    --chart-1: 32 60% 77%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+
+    /* Specific H2 color for dark mode: #BEBCB2 - 190,188,178 -> ~50deg, 6%, 72% */
+    --h2-foreground: 50 6% 72%;
   }
 }
 
@@ -63,7 +69,26 @@
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply text-foreground;
+  }
+
+  .dark h1,
+  .dark h2,
+  .dark h3,
+  .dark h4,
+  .dark h5,
+  .dark h6 {
+    color: hsl(var(--h2-foreground));
   }
 }

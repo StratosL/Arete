@@ -14,10 +14,10 @@ export const JobAnalysisDisplay = ({ jobAnalysis }: JobAnalysisDisplayProps) => 
       </div>
 
       {/* Job Overview */}
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
+      <div className="bg-secondary/50 rounded-lg border p-6">
         <div className="flex items-center space-x-2 mb-4">
           <Briefcase className="w-5 h-5 text-blue-600" />
-          <h3 className="text-lg font-semibold text-gray-900">Job Overview</h3>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-[hsl(var(--h2-foreground))]">Job Overview</h3>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
@@ -36,10 +36,10 @@ export const JobAnalysisDisplay = ({ jobAnalysis }: JobAnalysisDisplayProps) => 
       </div>
 
       {/* Required Skills */}
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
+      <div className="bg-secondary/50 rounded-lg border p-6">
         <div className="flex items-center space-x-2 mb-4">
           <Target className="w-5 h-5 text-red-600" />
-          <h3 className="text-lg font-semibold text-gray-900">Required Skills</h3>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-[hsl(var(--h2-foreground))]">Required Skills</h3>
         </div>
         <div className="flex flex-wrap gap-2">
           {jobAnalysis.required_skills.map((skill, i) => (
@@ -51,10 +51,10 @@ export const JobAnalysisDisplay = ({ jobAnalysis }: JobAnalysisDisplayProps) => 
       </div>
 
       {/* Preferred Skills */}
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
+      <div className="bg-secondary/50 rounded-lg border p-6">
         <div className="flex items-center space-x-2 mb-4">
           <TrendingUp className="w-5 h-5 text-green-600" />
-          <h3 className="text-lg font-semibold text-gray-900">Preferred Skills</h3>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-[hsl(var(--h2-foreground))]">Preferred Skills</h3>
         </div>
         <div className="flex flex-wrap gap-2">
           {jobAnalysis.preferred_skills.map((skill, i) => (
@@ -66,10 +66,10 @@ export const JobAnalysisDisplay = ({ jobAnalysis }: JobAnalysisDisplayProps) => 
       </div>
 
       {/* Technologies */}
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
+      <div className="bg-secondary/50 rounded-lg border p-6">
         <div className="flex items-center space-x-2 mb-4">
           <Code className="w-5 h-5 text-purple-600" />
-          <h3 className="text-lg font-semibold text-gray-900">Technologies</h3>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-[hsl(var(--h2-foreground))]">Technologies</h3>
         </div>
         <div className="flex flex-wrap gap-2">
           {jobAnalysis.technologies.map((tech, i) => (
@@ -81,16 +81,16 @@ export const JobAnalysisDisplay = ({ jobAnalysis }: JobAnalysisDisplayProps) => 
       </div>
 
       {/* Key Requirements */}
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
+      <div className="bg-secondary/50 rounded-lg border p-6">
         <div className="flex items-center space-x-2 mb-4">
           <CheckCircle className="w-5 h-5 text-blue-600" />
-          <h3 className="text-lg font-semibold text-gray-900">Key Requirements</h3>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-[hsl(var(--h2-foreground))]">Key Requirements</h3>
         </div>
         <ul className="space-y-2">
           {jobAnalysis.key_requirements.map((req, i) => (
             <li key={i} className="flex items-start space-x-2">
               <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-              <span className="text-gray-700">{req}</span>
+              <span className="text-gray-700 dark:text-gray-300">{req}</span>
             </li>
           ))}
         </ul>

@@ -27,7 +27,7 @@ export const DocumentExport = ({ resumeId }: DocumentExportProps) => {
         <p className="text-gray-600">Download your ATS-optimized resume in professional formats</p>
       </div>
 
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
+      <div className="bg-secondary/50 rounded-lg border p-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <button
             onClick={() => handleExport('pdf')}
