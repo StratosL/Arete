@@ -26,7 +26,8 @@
     "read",
     "glob",
     "grep",
-    "shell"
+    "shell",
+    "write"
   ],
   "toolsSettings": {
     "write": {
@@ -72,5 +73,5 @@
       }
     ]
   },
-  "model": "claude-sonnet-4"
+  "model": "auto"
 }

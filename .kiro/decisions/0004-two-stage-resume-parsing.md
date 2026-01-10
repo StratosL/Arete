@@ -46,7 +46,6 @@ response = llm.parse(pdf_bytes, "Extract resume data as JSON")
 **Cons**:
 - **LLMs can't read PDF binaries directly**
 - Need to extract text first anyway
-- Claude API doesn't accept PDF files (only text/images)
 
 ### 2. Rule-Based Parsing (Regex + Pattern Matching)
 
