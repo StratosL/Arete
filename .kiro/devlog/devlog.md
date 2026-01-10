@@ -43,7 +43,7 @@ Built a complete AI-powered resume optimization platform in **14.65 hours** acro
 
 ### Kiro CLI Usage
 
-- **Custom Agents Created**: 4 (backend, frontend, infrastructure, testing)
+- **Custom Agents Created**: 5 (backend, frontend, infrastructure, testing, docs-commit)
 - **Agent Prompt Enhancement**: 47 lines → 362-629 lines each (10x improvement)
 - **Steering Documents**: 3 (product.md, tech.md, structure.md)
 - **Most Used**: @prime, Enhanced Orchestrator Strategy, code quality validation
@@ -230,6 +230,12 @@ Built a complete AI-powered resume optimization platform in **14.65 hours** acro
 - ✅ 10KB prompt with pytest, Vitest, Playwright expertise
 - ✅ Restricted write access to test files only
 - ✅ Auto-shows coverage on spawn via hooks
+
+**Documentation Agent Creation** (15min):
+- ✅ Created `docs-commit-agent` - 5th specialized agent
+- ✅ Documentation and commit specialist with git-log-as-memory strategy
+- ✅ Restricted write access to devlog, README, and review plans
+- ✅ Auto-shows recent git activity and uncommitted changes on spawn
 
 **Backend Test Suite** (1h):
 - ✅ Created `backend/tests/conftest.py` with shared fixtures

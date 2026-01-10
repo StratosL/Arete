@@ -1,0 +1,60 @@
+{
+  "name": "docs-commit-agent",
+  "description": "Documentation and commit specialist - updates devlog, README, review plans, and creates rich git commits following git-log-as-memory strategy",
+  "prompt": "file://docs-commit-agent-prompt.md",
+  "resources": [
+    "file://.kiro/devlog/devlog.md",
+    "file://.kiro/devlog-template.md",
+    "file://.kiro/prompts/update-devlog.md",
+    "file://.kiro/reference/git-log-as-memory.md",
+    "file://.kiro/review-plan-steps/**/*.md",
+    "file://.kiro/steering/product.md",
+    "file://README.md"
+  ],
+  "tools": [
+    "read",
+    "write",
+    "shell",
+    "glob",
+    "grep"
+  ],
+  "allowedTools": [
+    "read",
+    "glob",
+    "grep",
+    "shell"
+  ],
+  "toolsSettings": {
+    "write": {
+      "allowedPaths": [
+        ".kiro/devlog/devlog.md",
+        ".kiro/review-plan-steps/**/*.md",
+        "README.md"
+      ]
+    },
+    "shell": {
+      "allowedCommands": [
+        "git status*",
+        "git diff*",
+        "git log*",
+        "git add*",
+        "git commit*",
+        "git branch*",
+        "git show*"
+      ]
+    }
+  },
+  "hooks": {
+    "agentSpawn": [
+      {
+        "command": "echo '=== Recent Git Activity ===' && git log --oneline -5 2>/dev/null || echo 'No git history'",
+        "timeout_ms": 5000
+      },
+      {
+        "command": "echo '' && echo '=== Uncommitted Changes ===' && git status --porcelain 2>/dev/null | head -20 || echo 'No changes'",
+        "timeout_ms": 5000
+      }
+    ]
+  },
+  "model": "claude-sonnet-4"
+}
