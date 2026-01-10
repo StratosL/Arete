@@ -4,7 +4,9 @@ import { ResumeDisplay } from './components/ResumeDisplay';
 import { JobDescriptionInput } from './components/JobDescriptionInput';
 import { JobAnalysisDisplay } from './components/JobAnalysisDisplay';
 import { OptimizationDisplay } from './components/OptimizationDisplay';
+import { CoverLetterDisplay } from './components/CoverLetterDisplay';
 import { DocumentExport } from './components/DocumentExport';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import { ThemeProvider } from "./components/theme-provider"
 import { ModeToggle } from "./components/mode-toggle"
 import { Button } from "./components/ui/button"
@@ -70,6 +72,11 @@ function App() {
               </div>
               <div className="border-t pt-8">
                 <OptimizationDisplay resumeData={resumeData} jobAnalysis={jobAnalysis} />
+              </div>
+              <div className="border-t pt-8">
+                <ErrorBoundary>
+                  <CoverLetterDisplay resumeData={resumeData} jobAnalysis={jobAnalysis} />
+                </ErrorBoundary>
               </div>
               <div className="border-t pt-8">
                 <DocumentExport resumeId={resumeData.id} />

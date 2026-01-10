@@ -34,19 +34,40 @@ export const jobsApi = {
 };
 
 export const optimizationApi = {
-  getOptimizationUrl: (data: OptimizationRequest): string => {
-    const params = new URLSearchParams({
-      resume_id: data.resume_id,
-      job_id: data.job_id,
+  startOptimization: async (data: OptimizationRequest): Promise<Response> => {
+    const response = await fetch(`${API_BASE_URL}/optimize`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        resume_id: data.resume_id,
+        job_id: data.job_id,
+      }),
     });
-    return `${API_BASE_URL}/optimize?${params.toString()}`;
+    return response;
   },
-  
-  getOptimizationPayload: (data: OptimizationRequest) => {
-    return {
-      resume_id: data.resume_id,
-      job_id: data.job_id,
-    };
+
+  generateCoverLetter: async (resumeId: string, jobId: string): Promise<{ cover_letter: string }> => {
+    console.log('generateCoverLetter API called with:', { resumeId, jobId });
+    
+    try {
+      const response = await apiClient.post('/optimize/cover-letter', {
+        resume_id: resumeId,
+        job_id: jobId,
+      });
+      
+      console.log('generateCoverLetter API response:', response);
+      
+      if (!response.data) {
+        throw new Error('No data in response');
+      }
+      
+      return response.data;
+    } catch (error) {
+      console.error('generateCoverLetter API error:', error);
+      throw error;
+    }
   },
 
   saveOptimization: async (resumeId: string, suggestions: any[], resumeData: any): Promise<void> => {

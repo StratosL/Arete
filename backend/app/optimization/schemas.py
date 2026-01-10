@@ -1,3 +1,4 @@
+from datetime import datetime
 from pydantic import BaseModel
 
 
@@ -11,6 +12,18 @@ class SaveOptimizationRequest(BaseModel):
     """Request model for saving optimization results"""
     resume_id: str
     optimized_data: dict
+
+
+class CoverLetterRequest(BaseModel):
+    """Request model for cover letter generation"""
+    resume_id: str
+    job_id: str
+
+
+class CoverLetterResponse(BaseModel):
+    """Response model for cover letter generation"""
+    cover_letter: str
+    generated_at: datetime
 
 
 class OptimizationSuggestion(BaseModel):

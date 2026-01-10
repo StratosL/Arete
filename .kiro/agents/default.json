@@ -11,8 +11,6 @@
   ],
   "tools": [
     "read",
-    "write", 
-    "shell",
     "glob",
     "grep",
     "use_subagent"
@@ -38,10 +36,6 @@
       {
         "matcher": "use_subagent",
         "command": "bash .kiro/scripts/check-devlog-update.sh"
-      },
-      {
-        "matcher": "write",
-        "command": "bash .kiro/scripts/sync-documentation.sh"
       }
     ]
   },

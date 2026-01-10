@@ -2,12 +2,50 @@ import asyncio
 import json
 from typing import AsyncGenerator
 
+from fastapi import HTTPException
+
+from app.core.database import get_supabase_service_client
 from app.core.llm import stream_llm_response
 from app.optimization.schemas import OptimizationProgress, OptimizationSuggestion
 
 
 class OptimizationService:
     """Service for AI-powered resume optimization"""
+
+    async def get_resume_job_data(self, resume_id: str, job_id: str) -> tuple[dict, dict]:
+        """Fetch and validate resume and job data"""
+        supabase = get_supabase_service_client()
+        
+        # Fetch resume data
+        resume_response = (
+            supabase.table("resumes")
+            .select("*")
+            .eq("id", resume_id)
+            .execute()
+        )
+        if not resume_response.data:
+            raise HTTPException(status_code=404, detail="Resume not found")
+        
+        resume_record = resume_response.data[0]
+        resume_data = resume_record.get("parsed_data", {})
+        
+        # Fetch job analysis data
+        job_response = supabase.table("jobs").select("*").eq("id", job_id).execute()
+        if not job_response.data:
+            raise HTTPException(status_code=404, detail="Job analysis not found")
+        
+        job_record = job_response.data[0]
+        job_analysis = job_record.get("analysis", {})
+        
+        return resume_data, job_analysis
+
+    async def save_optimization(self, resume_id: str, optimized_data: dict) -> None:
+        """Save optimization results to database"""
+        supabase = get_supabase_service_client()
+        
+        supabase.table("resumes").update({
+            "optimized_data": optimized_data
+        }).eq("id", resume_id).execute()
 
     async def optimize_resume(
         self, resume_data: dict, job_analysis: dict
@@ -22,7 +60,7 @@ class OptimizationService:
             suggestions=[],
             completed=False
         )
-        await asyncio.sleep(1)  # Simulate processing time
+        await asyncio.sleep(1)
 
         # Step 2: Generate keyword suggestions
         yield OptimizationProgress(
@@ -32,7 +70,7 @@ class OptimizationService:
             suggestions=[],
             completed=False
         )
-        await asyncio.sleep(2)  # Simulate AI processing
+        await asyncio.sleep(2)
 
         keyword_suggestions = await self._generate_keyword_suggestions(resume_data, job_analysis)
         
@@ -53,7 +91,7 @@ class OptimizationService:
             suggestions=keyword_suggestions,
             completed=False
         )
-        await asyncio.sleep(2)  # Simulate AI processing
+        await asyncio.sleep(2)
 
         experience_suggestions = await self._enhance_experience(resume_data, job_analysis)
         all_suggestions = keyword_suggestions + experience_suggestions
@@ -77,6 +115,46 @@ class OptimizationService:
             suggestions=all_suggestions,
             completed=True
         )
+
+    async def generate_cover_letter(self, resume_data: dict, job_analysis: dict) -> str:
+        """Generate tailored cover letter based on resume and job analysis"""
+        
+        personal_info = resume_data.get('personal_info', {})
+        experience = resume_data.get('experience', [])
+        skills = resume_data.get('skills', {})
+        
+        prompt = f"""
+        Write a professional cover letter for a tech professional applying to this job.
+        
+        CANDIDATE INFO:
+        Name: {personal_info.get('name', 'Candidate')}
+        Current Role: {experience[0].get('title', 'Software Engineer') if experience else 'Software Engineer'}
+        Key Skills: {', '.join(skills.get('technical', [])[:5])}
+        
+        JOB INFO:
+        Title: {job_analysis.get('title', 'Software Engineer')}
+        Company: {job_analysis.get('company', 'Company')}
+        Required Skills: {', '.join(job_analysis.get('required_skills', [])[:5])}
+        Technologies: {', '.join(job_analysis.get('technologies', [])[:3])}
+        
+        REQUIREMENTS:
+        - Professional tone, 3-4 paragraphs
+        - Mention specific technologies from job requirements
+        - Highlight relevant experience alignment
+        - Show enthusiasm for the role and company
+        - End with call to action
+        - No placeholder text like [Company Name]
+        
+        Return ONLY the cover letter text, no additional formatting or explanations.
+        """
+
+        messages = [{"role": "user", "content": prompt}]
+        response_text = ""
+        
+        async for chunk in stream_llm_response(messages):
+            response_text += chunk
+
+        return response_text.strip()
 
     async def _generate_keyword_suggestions(
         self, resume_data: dict, job_analysis: dict
@@ -115,7 +193,6 @@ class OptimizationService:
             response_text += chunk
 
         try:
-            # Clean and parse JSON
             json_str = response_text.strip()
             if json_str.startswith('```json'):
                 json_str = json_str[7:-3]
@@ -125,7 +202,6 @@ class OptimizationService:
             suggestions_data = json.loads(json_str)
             return [OptimizationSuggestion(**suggestion) for suggestion in suggestions_data]
         except (json.JSONDecodeError, Exception):
-            # Fallback suggestion if parsing fails
             return [OptimizationSuggestion(
                 section="skills",
                 type="add_keyword",
@@ -144,7 +220,6 @@ class OptimizationService:
         if not experience_items:
             return []
 
-        # Take first experience item for optimization
         first_experience = experience_items[0]
         
         prompt = f"""

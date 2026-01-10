@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { ResumeData, JobAnalysis, OptimizationProgress, OptimizationSuggestion } from '@/types';
 import { optimizationApi } from '@/lib/api';
-import { useSSE } from '@/hooks/useSSE';
 import { Zap, CheckCircle, AlertCircle, Loader2, Play, Square, Lightbulb, TrendingUp, Save } from 'lucide-react';
 
 interface OptimizationDisplayProps {
@@ -11,45 +10,70 @@ interface OptimizationDisplayProps {
 
 export const OptimizationDisplay = ({ resumeData, jobAnalysis }: OptimizationDisplayProps) => {
   const [isOptimizing, setIsOptimizing] = useState(false);
-  const [optimizationUrl, setOptimizationUrl] = useState<string | null>(null);
   const [allSuggestions, setAllSuggestions] = useState<OptimizationSuggestion[]>([]);
   const [currentProgress, setCurrentProgress] = useState<OptimizationProgress | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const { events, isConnected, error, disconnect } = useSSE(optimizationUrl, {
-    onProgress: (progress) => {
-      setCurrentProgress(progress);
-      if (progress.suggestions.length > 0) {
-        setAllSuggestions(progress.suggestions);
-      }
-    },
-    onComplete: () => {
-      setIsOptimizing(false);
-      setOptimizationUrl(null);
-    },
-    onError: () => {
-      setIsOptimizing(false);
-      setOptimizationUrl(null);
-    },
-  });
-
-  const startOptimization = () => {
-    const url = optimizationApi.getOptimizationUrl({
-      resume_id: resumeData.id,
-      job_id: jobAnalysis.id,
-    });
-
-    setOptimizationUrl(url);
+  const startOptimization = async () => {
     setIsOptimizing(true);
     setAllSuggestions([]);
     setCurrentProgress(null);
+    setError(null);
+
+    try {
+      const response = await optimizationApi.startOptimization({
+        resume_id: resumeData.id,
+        job_id: jobAnalysis.id,
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      const reader = response.body?.getReader();
+      if (!reader) {
+        throw new Error('No response body');
+      }
+
+      const decoder = new TextDecoder();
+      let buffer = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+        buffer = lines.pop() || '';
+
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            try {
+              const data = JSON.parse(line.slice(6));
+              setCurrentProgress(data);
+              if (data.suggestions?.length > 0) {
+                setAllSuggestions(data.suggestions);
+              }
+              if (data.completed) {
+                setIsOptimizing(false);
+                return;
+              }
+            } catch (err) {
+              console.error('Failed to parse SSE data:', err);
+            }
+          }
+        }
+      }
+    } catch (err: any) {
+      setError(err.message || 'Optimization failed');
+      setIsOptimizing(false);
+    }
   };
 
   const stopOptimization = () => {
-    disconnect();
     setIsOptimizing(false);
-    setOptimizationUrl(null);
   };
 
   const toggleSuggestion = (index: number) => {
@@ -141,10 +165,10 @@ export const OptimizationDisplay = ({ resumeData, jobAnalysis }: OptimizationDis
 
         {/* Connection Status */}
         <div className="flex items-center space-x-2 mt-4">
-          {isConnected ? (
+          {isOptimizing ? (
             <>
               <Loader2 className="w-4 h-4 text-green-500 animate-spin" />
-              <span className="text-sm text-green-600">Connected - Receiving updates</span>
+              <span className="text-sm text-green-600">Processing optimization...</span>
             </>
           ) : error ? (
             <>
@@ -223,22 +247,6 @@ export const OptimizationDisplay = ({ resumeData, jobAnalysis }: OptimizationDis
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Progress Log */}
-      {events.length > 0 && (
-        <div className="bg-gray-50 rounded-lg border border-gray-200 p-4">
-          <h4 className="text-sm font-medium text-gray-700 mb-2">Progress Log</h4>
-          <div className="max-h-40 overflow-y-auto space-y-1">
-            {events.map((event, index) => (
-              <div key={index} className="text-xs text-gray-600 flex items-center space-x-2">
-                <span className="font-mono text-blue-600">[{event.step}]</span>
-                <span>{event.message}</span>
-                <span className="text-gray-400">({event.progress}%)</span>
               </div>
             ))}
           </div>
