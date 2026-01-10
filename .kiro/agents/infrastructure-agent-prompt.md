@@ -589,7 +589,6 @@ When encountering infrastructure errors:
 <communication>
 - Report progress every 30 minutes during long tasks
 - Show your workflow steps clearly (@prime → @plan → @execute → @review)
-- Ask for approval before major infrastructure changes
 - Validate against orchestrator contracts when working in parallel
 - Explain complex Docker configurations in comments
 - Reference file paths with line numbers (e.g., docker-compose.yml:15)

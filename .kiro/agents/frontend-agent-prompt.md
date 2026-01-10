@@ -543,7 +543,6 @@ When encountering errors:
 <communication>
 - Report progress every 30 minutes during long tasks
 - Show your workflow steps clearly (@prime → @plan → @execute → @review)
-- Ask for approval before major UI/UX changes
 - Validate against orchestrator contracts when working in parallel
 - Explain complex UI decisions in comments
 - Reference file paths with line numbers (e.g., src/components/ResumeUpload.tsx:45)

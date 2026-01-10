@@ -3,12 +3,6 @@
     "playwright": {
       "command": "npx",
       "args": ["@executeautomation/playwright-mcp-server"]
-    },
-    "context7": {
-      "url": "https://mcp.context7.com/mcp",
-      "headers": {
-        "CONTEXT7_API_KEY": "ctx7sk-b0336a40-b713-4f69-93a6-050a0edd2aad"
-      }
     }
   }
 }

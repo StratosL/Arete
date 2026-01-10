@@ -332,7 +332,6 @@ When encountering errors:
 <communication>
 - Report progress every 30 minutes during long tasks
 - Show your workflow steps clearly (@prime → @plan → @execute → @review)
-- Ask for approval before major architectural changes
 - Validate against orchestrator contracts when working in parallel
 - Explain complex decisions in code comments
 - Reference file paths with line numbers (e.g., backend/app/resume/routes.py:45)
