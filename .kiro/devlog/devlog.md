@@ -278,6 +278,7 @@ Built a complete AI-powered resume optimization platform in **14.65 hours** acro
 2. **Enhanced agent prompts** reduce errors by ~40%
 3. **Auto-loaded context** cuts interruptions by 50%
 4. **30-minute checkpoints** catch issues early
+5. **Approval gate protocols** require behavioral enforcement, not just technical restrictions
 
 ### Technical Insights
 1. **VSA architecture** enables true parallel development
@@ -290,6 +291,12 @@ Built a complete AI-powered resume optimization platform in **14.65 hours** acro
 2. **Custom agents** with resources field eliminate manual file reads
 3. **Hooks** enable dynamic context on agent spawn
 4. **Pre-approved tools** reduce permission prompts significantly
+
+### Protocol Enforcement Lessons
+1. **Technical enforcement alone insufficient** - Removed orchestrator write permissions but still bypassed approval gates
+2. **Behavioral patterns persist** - Old habits override new protocols without conscious reinforcement
+3. **Explicit confirmation required** - "Awaiting approval" must mean actually waiting for user response
+4. **Process documentation ≠ process adherence** - Need both technical and behavioral safeguards
 
 ---
 
