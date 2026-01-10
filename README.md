@@ -3,9 +3,9 @@
 Arete is an AI-powered job application optimizer specifically designed for tech professionals. It transforms generic resumes into ATS-optimized, role-specific applications by understanding technical terminology, frameworks, and GitHub profiles. Unlike generic resume tools, Arete speaks the language of software engineering and provides real-time streaming optimization with actionable, tech-specific insights.
 
 **🎯 Current Status**: Full MVP Complete - 100% Code Quality Score (8/8 validations)
-**🚀 Live Demo**: Complete workflow validated - Upload → Parse → Job Analysis → AI Optimization → Apply Suggestions → Export Optimized Documents
+**🚀 Live Demo**: Complete workflow validated - Upload → Parse → Job Analysis → AI Optimization → Cover Letter Generation → Export Optimized Documents
 **⚡ Tech Stack**: FastAPI + React + TypeScript + Supabase + Claude API + ReportLab
-**✅ Production Ready**: All 4 phases complete with optimization persistence - exported PDFs contain AI-optimized content
+**✅ Production Ready**: All 5 phases complete with cover letter generation - exported documents contain AI-optimized content
 
 ---
 
@@ -256,6 +256,13 @@ docker-compose up --build
 - **Document Export**: Professional PDF (ReportLab) and DOCX generation with ATS-compliant formatting
 - **Download Integration**: Seamless browser downloads with proper file handling and MIME types
 
+### Cover Letter Generation (Phase 5 - Complete & Production Ready)
+- **Personalized Cover Letters**: AI-generated cover letters using resume and job analysis data
+- **Company-Specific Content**: Mentions specific company, role, and required technologies
+- **Professional Formatting**: Business letter format with proper tone and structure
+- **Download Functionality**: Export cover letters as text files with proper naming
+- **Regeneration Options**: Users can regenerate for different versions with loading indicators
+
 ### Technical Implementation
 - **Backend**: FastAPI with async processing, Supabase integration, LiteLLM wrapper, ReportLab PDF generation
 - **Frontend**: React 18 + TypeScript 5 with Vite 6 for fast development
@@ -267,12 +274,12 @@ docker-compose up --build
 
 ## All Features Complete ✅
 
-**MVP Status**: All 4 phases implemented and production-ready
+**MVP Status**: All 5 phases implemented and production-ready
 - ✅ **Phase 1**: Resume Upload & Parsing with GitHub integration
 - ✅ **Phase 2**: Job Description Analysis with URL scraping
 - ✅ **Phase 3**: AI Optimization with real-time SSE streaming
 - ✅ **Phase 4**: Document Export with PDF and DOCX generation
-- Interview preparation questions
+- ✅ **Phase 5**: Cover Letter Generation with personalized content
 
 ## Architecture & Codebase Overview
 
@@ -333,7 +340,8 @@ arete/
 3. **Job Analysis**: Input job description (text or URL) for AI requirement extraction
 4. **AI Optimization**: Real-time SSE streaming with personalized suggestions
 5. **Apply Suggestions**: Review and selectively apply optimization recommendations
-6. **Document Export**: Download optimized PDF/DOCX with applied improvements
+6. **Cover Letter Generation**: Generate personalized cover letters with company-specific content
+7. **Document Export**: Download optimized PDF/DOCX and cover letter files
 
 ### Resume Processing Pipeline
 1. **File Upload**: Accepts PDF/DOCX/TXT files up to 10MB
