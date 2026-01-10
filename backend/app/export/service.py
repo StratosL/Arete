@@ -103,9 +103,17 @@ Return ONLY valid JSON in this exact format:
     def _quick_categorize(self, skill: str) -> str | None:
         """Try to categorize skill using known mappings. Returns None if unknown."""
         skill_lower = skill.lower().strip()
+        
+        # First pass: exact matches
         for category, skills in self.KNOWN_SKILLS.items():
-            if skill_lower in skills or any(s in skill_lower for s in skills):
+            if skill_lower in skills:
                 return category
+        
+        # Second pass: substring matches (for compound skills)
+        for category, skills in self.KNOWN_SKILLS.items():
+            if any(s in skill_lower for s in skills if len(s) > 2):  # Avoid single char matches
+                return category
+        
         return None
     
     async def _llm_categorize_skills(self, skills: list[str]) -> dict[str, list[str]]:

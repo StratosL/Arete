@@ -31,9 +31,9 @@ export interface Project {
 }
 
 export interface Education {
-  degree: string;
-  institution: string;
-  graduation_year: string;
+  degree?: string;
+  institution?: string;
+  graduation_year?: string;
   gpa?: string;
 }
 
@@ -67,13 +67,6 @@ export interface JobAnalysis {
   technologies: string[];
   experience_level: string;
   key_requirements: string[];
-}
-
-export interface JobAnalysisResponse {
-  id: string;
-  status: string;
-  message: string;
-  data?: JobAnalysis;
 }
 
 export interface OptimizationRequest {

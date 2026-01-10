@@ -40,7 +40,7 @@ class TestResumeParser:
         """Test basic DOCX parsing functionality"""
         mock_content = b"mock docx content"
 
-        with patch('docx.Document') as mock_doc:
+        with patch('app.resume.parser.Document') as mock_doc:
             # Setup mock document
             mock_paragraph = Mock()
             mock_paragraph.text = "Jane Smith\nData Scientist"
@@ -48,6 +48,9 @@ class TestResumeParser:
             mock_doc.return_value.paragraphs = [mock_paragraph]
 
             result = self.parser._parse_docx(mock_content)
+
+            assert isinstance(result, str)
+            assert "Jane Smith" in result
 
             assert isinstance(result, str)
             assert "Jane Smith" in result

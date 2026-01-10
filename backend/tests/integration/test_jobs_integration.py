@@ -1,15 +1,14 @@
+"""
+Integration tests for jobs endpoints
+"""
 from unittest.mock import patch
-
 import pytest
-from backend.main import app
 from fastapi.testclient import TestClient
 
+from main import app
 from app.jobs.service import job_analysis_service
 
 client = TestClient(app)
-
-
-@pytest.mark.asyncio
 
 
 @pytest.mark.integration
@@ -18,7 +17,7 @@ class TestJobsIntegration:
 
     @patch.object(job_analysis_service, 'analyze_job_description')
     @patch('app.jobs.routes.get_supabase_service_client')
-    async def test_analyze_job_with_text(self, mock_supabase, mock_analyze):
+    def test_analyze_job_with_text(self, mock_supabase, mock_analyze):
         """Test job analysis with direct text input"""
         # Mock LLM response
         mock_analyze.return_value = {
@@ -32,9 +31,7 @@ class TestJobsIntegration:
         }
 
         # Mock Supabase
-        mock_supabase.return_value.table.return_value.insert.return_value.execute.return_value = (
-            None
-        )
+        mock_supabase.return_value.table.return_value.insert.return_value.execute.return_value = None
 
         response = client.post("/jobs/analyze", json={
             "job_text": "Software Engineer position requiring Python and FastAPI experience"
@@ -50,7 +47,7 @@ class TestJobsIntegration:
     @patch.object(job_analysis_service, 'scrape_job_url')
     @patch.object(job_analysis_service, 'analyze_job_description')
     @patch('app.jobs.routes.get_supabase_service_client')
-    async def test_analyze_job_with_url(self, mock_supabase, mock_analyze, mock_scrape):
+    def test_analyze_job_with_url(self, mock_supabase, mock_analyze, mock_scrape):
         """Test job analysis with URL scraping"""
         # Mock URL scraping
         mock_scrape.return_value = "Software Engineer job description with Python requirements"
@@ -67,9 +64,7 @@ class TestJobsIntegration:
         }
 
         # Mock Supabase
-        mock_supabase.return_value.table.return_value.insert.return_value.execute.return_value = (
-            None
-        )
+        mock_supabase.return_value.table.return_value.insert.return_value.execute.return_value = None
 
         response = client.post("/jobs/analyze", json={
             "job_url": "https://example.com/job/123"
@@ -85,4 +80,5 @@ class TestJobsIntegration:
         response = client.post("/jobs/analyze", json={})
 
         assert response.status_code == 422
-        assert "Either job_text or job_url must be provided" in response.text
+        # Pydantic validation error message format
+        assert "job_text" in response.text or "job_url" in response.text

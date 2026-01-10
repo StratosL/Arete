@@ -1,0 +1,70 @@
+{
+  "name": "testing-agent",
+  "description": "QA specialist for writing unit, integration, and E2E tests - pytest, Vitest, React Testing Library, Playwright",
+  "prompt": "file://testing-agent-prompt.md",
+  "resources": [
+    "file://api-contracts.yaml",
+    "file://.kiro/steering/**/*.md",
+    "file://.kiro/reference/pytest-standard.md",
+    "file://backend/tests/**/*.py",
+    "file://backend/app/**/*.py",
+    "file://frontend/src/components/**/*.tsx",
+    "file://frontend/src/lib/**/*.ts",
+    "file://frontend/package.json",
+    "file://backend/requirements.txt"
+  ],
+  "tools": [
+    "read",
+    "write",
+    "shell",
+    "glob",
+    "grep"
+  ],
+  "allowedTools": [
+    "read",
+    "glob",
+    "grep",
+    "shell"
+  ],
+  "toolsSettings": {
+    "write": {
+      "allowedPaths": [
+        "backend/tests/**/*.py",
+        "frontend/src/**/*.test.tsx",
+        "frontend/src/**/*.test.ts",
+        "e2e/**/*.spec.ts",
+        "frontend/vitest.config.ts",
+        "frontend/vitest.setup.ts",
+        "playwright.config.ts"
+      ]
+    },
+    "shell": {
+      "allowedCommands": [
+        "pytest*",
+        "npm test*",
+        "npm run test*",
+        "npx vitest*",
+        "npx playwright*",
+        "pip install*pytest*",
+        "npm install*vitest*",
+        "npm install*testing-library*",
+        "npm install*playwright*",
+        "git status*",
+        "git diff*"
+      ]
+    }
+  },
+  "hooks": {
+    "agentSpawn": [
+      {
+        "command": "echo '=== Current Test Coverage ===' && pytest backend/ --cov=backend/app --cov-report=term-missing 2>/dev/null | tail -20 || echo 'No pytest coverage yet'",
+        "timeout_ms": 30000
+      },
+      {
+        "command": "git status --porcelain",
+        "timeout_ms": 5000
+      }
+    ]
+  },
+  "model": "claude-sonnet-4"
+}

@@ -2,7 +2,7 @@
 from pydantic import BaseModel
 from pydantic import Field
 from pydantic import HttpUrl
-from pydantic import field_validator
+from pydantic import model_validator
 
 
 class JobAnalysisRequest(BaseModel):
@@ -10,13 +10,12 @@ class JobAnalysisRequest(BaseModel):
     job_text: str | None = Field(None, description="Job description text")
     job_url: HttpUrl | None = Field(None, description="URL to job posting")
 
-    @field_validator('job_text')
-    @classmethod
-    def validate_input(cls, v, info):
+    @model_validator(mode='after')
+    def validate_input(self):
         """Validate that either job_text or job_url is provided"""
-        if not v and not info.data.get('job_url'):
+        if not self.job_text and not self.job_url:
             raise ValueError("Either job_text or job_url must be provided")
-        return v
+        return self
 
 
 class JobAnalysis(BaseModel):
