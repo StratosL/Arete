@@ -1,8 +1,14 @@
-# Optimization Persistence Setup
+# 0011. Optimization Persistence
 
-This document explains how to set up the optimization persistence feature that allows saving AI optimization results and using them in document exports.
+**Date**: 2025-01-10
+**Status**: Accepted
+**Tags**: architecture, database, api, optimization
 
-## Problem Solved
+## Context
+
+This document explains the optimization persistence feature that allows saving AI optimization results and using them in document exports.
+
+## Problem
 
 Previously, the AI optimization service generated suggestions via SSE streaming but never persisted them. The export service always used the original `parsed_data` from the database, so users couldn't export their optimized resumes.
 
