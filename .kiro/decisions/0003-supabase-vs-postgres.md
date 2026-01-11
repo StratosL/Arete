@@ -233,4 +233,4 @@ If we ever need to migrate away from Supabase:
 
 * [Supabase Documentation](https://supabase.com/docs)
 * [Supabase Python Client](https://supabase.com/docs/reference/python/introduction)
-* Setup script: `scripts/setup_supabase.py`
+* Setup script: `scripts/setup/setup_supabase.py`

@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Get the directory where this script is located
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
 echo "🔍 GitHub Integration Diagnostic Tool"
 echo "======================================"
 
@@ -15,7 +18,7 @@ pip3 install requests > /dev/null 2>&1
 
 # Run the diagnostic script
 echo "🚀 Running diagnostic tests..."
-python3 debug_github_integration.py
+python3 "$SCRIPT_DIR/debug_github_integration.py"
 
 echo ""
 echo "💡 Quick Fixes:"

@@ -290,7 +290,7 @@ htmlcov
 
 ### Environment Validation Script
 ```python
-# scripts/validate_env.py
+# scripts/setup/validate_env.py
 import os
 import sys
 
@@ -445,7 +445,7 @@ docker-compose build
 cat .env | grep SUPABASE
 
 # Test connection
-python scripts/validate_env.py
+python scripts/setup/validate_env.py
 
 # Check network connectivity
 docker network ls
@@ -536,7 +536,7 @@ When implementing infrastructure changes:
 1. **Understand**:
    - Read existing docker-compose.yml and Dockerfiles
    - Check .kiro/steering/structure.md for project layout
-   - Review setup scripts (scripts/setup.sh, setup.bat)
+   - Review setup scripts (scripts/setup/setup.sh, setup.bat)
 
 2. **Plan**:
    - Identify services that need configuration
@@ -610,7 +610,7 @@ When encountering infrastructure errors:
 - Frontend Dockerfile: frontend/Dockerfile
 - Environment example: .env.example (root)
 - Docker ignore: .dockerignore (in backend/ and frontend/)
-- Setup scripts: scripts/setup.sh, setup.bat
+- Setup scripts: scripts/setup/setup.sh, setup.bat
 
 **Key Commands:**
 - Build: docker-compose build

@@ -53,7 +53,7 @@
         "git status*",
         "git diff*",
         "git log*",
-        "python scripts/validate_env.py"
+        "python scripts/setup/validate_env.py"
       ]
     }
   },

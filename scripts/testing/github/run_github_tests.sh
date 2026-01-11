@@ -1,11 +1,14 @@
 #!/bin/bash
 
+# Get the directory where this script is located
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
 echo "🚀 GitHub Integration Live Test Suite"
 echo "====================================="
 
 # Test 1: Backend API
 echo "1. Testing Backend GitHub API..."
-python3 test_github_live.py
+python3 "$SCRIPT_DIR/test_github_live.py"
 
 # Test 2: Frontend availability
 echo -e "\n2. Testing Frontend availability..."

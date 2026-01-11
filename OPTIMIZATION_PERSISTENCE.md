@@ -22,7 +22,7 @@ Add the `optimized_data` column to your resumes table:
 # Option 1: Run migration script
 cd backend
 pip install supabase python-dotenv
-python ../scripts/add_optimized_data_column.py
+python ../scripts/database/add_optimized_data_column.py
 
 # Option 2: Manual SQL (in Supabase SQL Editor)
 ALTER TABLE resumes ADD COLUMN IF NOT EXISTS optimized_data JSONB;
@@ -32,7 +32,7 @@ ALTER TABLE resumes ADD COLUMN IF NOT EXISTS optimized_data JSONB;
 
 ```bash
 # Run the test script to verify everything works
-python scripts/test_optimization_persistence.py
+python scripts/validation/test_optimization_persistence.py
 ```
 
 ### 3. Frontend Integration

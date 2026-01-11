@@ -66,10 +66,10 @@ If the batch script doesn't work, run these commands one by one:
 pip install supabase python-dotenv litellm
 
 # Validate environment
-python scripts/validate_env.py
+python scripts/setup/validate_env.py
 
 # Setup database
-python scripts/setup_supabase.py
+python scripts/setup/setup_supabase.py
 
 # Start application
 docker-compose up --build

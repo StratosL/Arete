@@ -39,7 +39,7 @@
         "python -m pytest*",
         "python -m mypy*",
         "python -m ruff*",
-        "python scripts/validate_env.py",
+        "python scripts/setup/validate_env.py",
         "git status*",
         "git diff*",
         "git log*"

@@ -68,11 +68,11 @@ if not run_command(f'{python_cmd} -m pip install --break-system-packages supabas
     sys.exit(1)
 
 # Run environment validation
-if not run_command(f'{python_cmd} scripts/validate_env.py', 'Validating environment'):
+if not run_command(f'{python_cmd} scripts/setup/validate_env.py', 'Validating environment'):
     sys.exit(1)
 
 # Run Supabase setup
-if not run_command(f'{python_cmd} scripts/setup_supabase.py', 'Setting up Supabase'):
+if not run_command(f'{python_cmd} scripts/setup/setup_supabase.py', 'Setting up Supabase'):
     sys.exit(1)
 
 print()

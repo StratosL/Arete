@@ -10,6 +10,10 @@ import subprocess
 import sys
 from pathlib import Path
 
+# Get project root (3 levels up from this script: scripts/testing/github/)
+SCRIPT_DIR = Path(__file__).parent.resolve()
+PROJECT_ROOT = SCRIPT_DIR.parent.parent.parent
+
 def print_section(title):
     print(f"\n{'='*50}")
     print(f" {title}")
@@ -50,8 +54,8 @@ def test_backend_github_api():
 def test_frontend_components():
     """Check if frontend GitHub components exist"""
     print_section("2. Frontend Components Check")
-    
-    github_component = Path("frontend/src/components/GitHubAnalysis.tsx")
+
+    github_component = PROJECT_ROOT / "frontend/src/components/GitHubAnalysis.tsx"
     
     if github_component.exists():
         print("✅ GitHubAnalysis.tsx exists")

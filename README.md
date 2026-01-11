@@ -136,7 +136,7 @@ CLAUDE_API_KEY=sk-ant-api03-abcdefghijklmnopqrstuvwxyz123456789...
 
 3. Verify your configuration:
    ```bash
-   python scripts/validate_env.py
+   python scripts/setup/validate_env.py
    ```
    
    You should see:
@@ -165,7 +165,7 @@ CLAUDE_API_KEY=sk-ant-api03-abcdefghijklmnopqrstuvwxyz123456789...
 
    **Linux/Mac:**
    ```bash
-   ./scripts/setup.sh
+   ./scripts/setup/setup.sh
    ```
    
    **Windows (Recommended):**
@@ -199,11 +199,11 @@ If you prefer to run setup steps manually:
 **Linux/Mac:**
 ```bash
 # Validate environment
-python scripts/validate_env.py
+python scripts/setup/validate_env.py
 
 # Setup Supabase (requires Python dependencies)
 cd backend && pip install supabase python-dotenv && cd ..
-python scripts/setup_supabase.py
+python scripts/setup/setup_supabase.py
 
 # Start application
 docker-compose up --build
@@ -212,13 +212,13 @@ docker-compose up --build
 **Windows:**
 ```cmd
 # Validate environment
-python scripts/validate_env.py
+python scripts/setup/validate_env.py
 
 # Setup Supabase (requires Python dependencies)
 cd backend
 pip install supabase python-dotenv
 cd ..
-python scripts/setup_supabase.py
+python scripts/setup/setup_supabase.py
 
 # Start application
 docker-compose up --build
@@ -492,10 +492,10 @@ arete/
 
 **Database connection errors**
 - Verify Supabase credentials in `.env`
-- Run setup script: `./scripts/setup.sh`
+- Run setup script: `./scripts/setup/setup.sh`
 - Check network connectivity to Supabase
 - Review database schema and migrations
-- Test connection: `python scripts/validate_env.py`
+- Test connection: `python scripts/setup/validate_env.py`
 
 ### Getting Help
 - Check application logs: `docker-compose logs -f`

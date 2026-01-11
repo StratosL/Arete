@@ -30,7 +30,7 @@ cd ..
 
 # Run Supabase setup
 echo "🗄️  Setting up Supabase..."
-python3 scripts/setup_supabase.py
+python3 scripts/setup/setup_supabase.py
 
 echo ""
 echo "✅ Setup completed successfully!"
