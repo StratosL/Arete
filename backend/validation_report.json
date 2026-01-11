@@ -1,0 +1,111 @@
+{
+  "summary": {
+    "total_tests": 10,
+    "passed": 10,
+    "failed": 0,
+    "skipped": 0,
+    "errors": 0,
+    "success_rate": "100.0%"
+  },
+  "results": {
+    "Backend Health": {
+      "status": "PASS",
+      "details": "FastAPI docs accessible",
+      "timestamp": 1768149083.2144125
+    },
+    "Resume Upload": {
+      "status": "PASS",
+      "details": "Resume ID: b22f44ee-74c1-41de-be9b-e17393d3b4d2",
+      "timestamp": 1768149091.3817189
+    },
+    "Resume Parsing Quality": {
+      "status": "PASS",
+      "details": "All sections parsed correctly",
+      "timestamp": 1768149091.381785
+    },
+    "GitHub Integration": {
+      "status": "PASS",
+      "details": "Analyzed octocat",
+      "timestamp": 1768149103.4032466
+    },
+    "Job Analysis (Text)": {
+      "status": "PASS",
+      "details": "Job: Senior Python Developer - Remote",
+      "timestamp": 1768149107.8191986
+    },
+    "Job Analysis (URL)": {
+      "status": "PASS",
+      "details": "Scraped and analyzed URL",
+      "timestamp": 1768149115.141242
+    },
+    "AI Optimization": {
+      "status": "PASS",
+      "details": "Streaming completed with suggestions",
+      "timestamp": 1768149135.8134127
+    },
+    "Cover Letter Generation": {
+      "status": "PASS",
+      "details": "Generated 2106 chars",
+      "timestamp": 1768149144.9452684
+    },
+    "PDF Export": {
+      "status": "PASS",
+      "details": "Content-Type: application/pdf",
+      "timestamp": 1768149145.1164782
+    },
+    "DOCX Export": {
+      "status": "PASS",
+      "details": "Content-Type: application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "timestamp": 1768149145.3182504
+    }
+  },
+  "test_data": {
+    "resume_id": "b22f44ee-74c1-41de-be9b-e17393d3b4d2",
+    "job_id": "31c548a7-6f82-44ce-8d14-59641ac7d7e0",
+    "job_analysis": {
+      "id": "31c548a7-6f82-44ce-8d14-59641ac7d7e0",
+      "title": "Senior Python Developer - Remote",
+      "company": "Unknown",
+      "required_skills": [
+        "Python",
+        "FastAPI",
+        "Django",
+        "PostgreSQL",
+        "Redis",
+        "Docker",
+        "Kubernetes",
+        "AWS"
+      ],
+      "preferred_skills": [
+        "React",
+        "Vue.js",
+        "CI/CD pipeline",
+        "Microservices architecture"
+      ],
+      "technologies": [
+        "Python",
+        "FastAPI",
+        "Django",
+        "PostgreSQL",
+        "Redis",
+        "Docker",
+        "Kubernetes",
+        "AWS",
+        "React",
+        "Vue.js"
+      ],
+      "experience_level": "Senior",
+      "key_requirements": [
+        "5+ years of Python development experience",
+        "Experience with FastAPI or Django",
+        "Knowledge of PostgreSQL and Redis",
+        "Docker and Kubernetes experience",
+        "AWS cloud platform experience",
+        "Design and develop scalable web applications",
+        "Lead technical architecture decisions",
+        "Mentor junior developers",
+        "Collaborate with product team"
+      ]
+    }
+  }
+}
