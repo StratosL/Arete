@@ -1,5 +1,9 @@
 # Arete - AI-Powered Resume Optimizer for Tech Professionals
 
+<div align="center">
+  <img src="arete-logo.jpg" alt="Arete Logo" width="400">
+</div>
+
 Arete is an AI-powered job application optimizer specifically designed for tech professionals. It transforms generic resumes into ATS-optimized, role-specific applications by understanding technical terminology, frameworks, and GitHub profiles. Unlike generic resume tools, Arete speaks the language of software engineering and provides real-time streaming optimization with actionable, tech-specific insights.
 
 **🎯 Current Status**: Production Ready - 100% System Validation (10/10 tests passed)
