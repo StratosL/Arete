@@ -6,6 +6,7 @@ import { JobAnalysisDisplay } from './components/JobAnalysisDisplay';
 import { OptimizationDisplay } from './components/OptimizationDisplay';
 import { CoverLetterDisplay } from './components/CoverLetterDisplay';
 import { DocumentExport } from './components/DocumentExport';
+import { GitHubAnalysis } from './components/GitHubAnalysis';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { ThemeProvider } from "./components/theme-provider"
 import { ModeToggle } from "./components/mode-toggle"
@@ -13,9 +14,28 @@ import { Button } from "./components/ui/button"
 import { ResumeData, JobAnalysis } from './types';
 import './App.css';
 
+interface GitHubMetrics {
+  username: string;
+  totalRepos: number;
+  totalStars: number;
+  totalCommits: number;
+  topLanguages: string[];
+  topRepos: Array<{
+    name: string;
+    description: string;
+    stars: number;
+    forks: number;
+    language: string;
+    url: string;
+  }>;
+  suggestedBullets: string[];
+}
+
 function App() {
   const [resumeData, setResumeData] = useState<ResumeData | null>(null);
   const [jobAnalysis, setJobAnalysis] = useState<JobAnalysis | null>(null);
+  const [githubUrl, setGithubUrl] = useState('');
+  const [githubMetrics, setGithubMetrics] = useState<GitHubMetrics | null>(null);
 
   const handleUploadSuccess = (data: ResumeData) => {
     setResumeData(data);
@@ -25,9 +45,39 @@ function App() {
     setJobAnalysis(analysis);
   };
 
+  const handleAddBulletPoint = (bullet: string) => {
+    if (resumeData) {
+      const updatedResume = { ...resumeData };
+      
+      // Find or create GitHub experience entry
+      let githubExp = updatedResume.experience.find(exp => 
+        exp.title.toLowerCase().includes('github') || exp.company.toLowerCase().includes('github')
+      );
+      
+      if (!githubExp) {
+        githubExp = {
+          title: 'Open Source Contributions',
+          company: 'GitHub Projects',
+          duration: 'Ongoing',
+          description: [],
+          technologies: []
+        };
+        updatedResume.experience.unshift(githubExp);
+      }
+      
+      // Add bullet if not already present
+      if (!githubExp.description.includes(bullet)) {
+        githubExp.description.push(bullet);
+        setResumeData(updatedResume);
+      }
+    }
+  };
+
   const handleReset = () => {
     setResumeData(null);
     setJobAnalysis(null);
+    setGithubUrl('');
+    setGithubMetrics(null);
   };
 
   return (
@@ -56,10 +106,22 @@ function App() {
 
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
           {!resumeData ? (
-            <ResumeUpload onUploadSuccess={handleUploadSuccess} />
+            <ResumeUpload onUploadSuccess={handleUploadSuccess} githubUrl={githubUrl} setGithubUrl={setGithubUrl} />
           ) : !jobAnalysis ? (
             <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
               <ResumeDisplay resumeData={resumeData} />
+              {githubUrl && (
+                <div className="border-t pt-8">
+                  <ErrorBoundary>
+                    <GitHubAnalysis 
+                      githubUrl={githubUrl} 
+                      onAddBulletPoint={handleAddBulletPoint}
+                      metrics={githubMetrics}
+                      setMetrics={setGithubMetrics}
+                    />
+                  </ErrorBoundary>
+                </div>
+              )}
               <div className="border-t pt-8">
                 <JobDescriptionInput onAnalysisSuccess={handleJobAnalysisSuccess} />
               </div>
@@ -67,6 +129,18 @@ function App() {
           ) : (
             <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
               <ResumeDisplay resumeData={resumeData} />
+              {githubUrl && (
+                <div className="border-t pt-8">
+                  <ErrorBoundary>
+                    <GitHubAnalysis 
+                      githubUrl={githubUrl} 
+                      onAddBulletPoint={handleAddBulletPoint}
+                      metrics={githubMetrics}
+                      setMetrics={setGithubMetrics}
+                    />
+                  </ErrorBoundary>
+                </div>
+              )}
               <div className="border-t pt-8">
                 <JobAnalysisDisplay jobAnalysis={jobAnalysis} />
               </div>

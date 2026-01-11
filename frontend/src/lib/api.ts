@@ -10,19 +10,58 @@ const apiClient = axios.create({
 
 export const resumeApi = {
   uploadResume: async (file: File, githubUrl?: string): Promise<ResumeUploadResponse> => {
+    console.log('API: Starting resume upload', { 
+      fileName: file.name, 
+      fileSize: file.size, 
+      fileType: file.type,
+      githubUrl: githubUrl || 'none'
+    });
+
     const formData = new FormData();
     formData.append('file', file);
     if (githubUrl) {
       formData.append('github_url', githubUrl);
     }
 
-    const response = await apiClient.post<ResumeUploadResponse>('/resume/upload', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
+    try {
+      const response = await apiClient.post<ResumeUploadResponse>('/resume/upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
 
-    return response.data;
+      console.log('API: Upload response received', {
+        status: response.status,
+        statusText: response.statusText,
+        data: response.data
+      });
+
+      // Validate response structure
+      if (!response.data) {
+        throw new Error('API returned empty response data');
+      }
+
+      if (!response.data.data && response.data.status !== 'success') {
+        throw new Error(`API returned error: ${response.data.message || 'Unknown error'}`);
+      }
+
+      return response.data;
+    } catch (error: any) {
+      console.error('API: Upload failed', {
+        message: error.message,
+        status: error.response?.status,
+        statusText: error.response?.statusText,
+        responseData: error.response?.data,
+        requestConfig: {
+          url: error.config?.url,
+          method: error.config?.method,
+          headers: error.config?.headers
+        }
+      });
+      
+      // Re-throw with enhanced error information
+      throw error;
+    }
   },
 };
 

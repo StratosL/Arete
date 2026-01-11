@@ -25,10 +25,13 @@ interface GitHubMetrics {
 interface GitHubAnalysisProps {
   githubUrl: string;
   onAddBulletPoint: (bullet: string) => void;
+  metrics: GitHubMetrics | null;
+  setMetrics: (metrics: GitHubMetrics | null) => void;
 }
 
-export const GitHubAnalysis = ({ githubUrl, onAddBulletPoint }: GitHubAnalysisProps) => {
-  const [metrics, setMetrics] = useState<GitHubMetrics | null>(null);
+export const GitHubAnalysis = ({ githubUrl, onAddBulletPoint, metrics, setMetrics }: GitHubAnalysisProps) => {
+  console.log('GitHubAnalysis rendered with:', { githubUrl });
+  
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string>('');
   const [addedBullets, setAddedBullets] = useState<Set<string>>(new Set());
@@ -38,51 +41,35 @@ export const GitHubAnalysis = ({ githubUrl, onAddBulletPoint }: GitHubAnalysisPr
     setError('');
     
     try {
-      // Mock data for now - replace with actual API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      const username = githubUrl.split('/').pop() || 'user';
+      const response = await fetch('http://localhost:8000/github/analyze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username })
+      });
       
-      const mockMetrics: GitHubMetrics = {
-        username: githubUrl.split('/').pop() || 'user',
-        totalRepos: 24,
-        totalStars: 156,
-        totalCommits: 1247,
-        topLanguages: ['TypeScript', 'Python', 'JavaScript', 'Go'],
-        topRepos: [
-          {
-            name: 'ai-resume-optimizer',
-            description: 'Full-stack resume optimization platform with AI',
-            stars: 89,
-            forks: 12,
-            language: 'TypeScript',
-            url: `${githubUrl}/ai-resume-optimizer`
-          },
-          {
-            name: 'microservices-api',
-            description: 'Scalable microservices architecture with Docker',
-            stars: 45,
-            forks: 8,
-            language: 'Python',
-            url: `${githubUrl}/microservices-api`
-          },
-          {
-            name: 'react-dashboard',
-            description: 'Modern dashboard with real-time analytics',
-            stars: 22,
-            forks: 5,
-            language: 'JavaScript',
-            url: `${githubUrl}/react-dashboard`
-          }
-        ],
-        suggestedBullets: [
-          'Developed 24+ open-source projects with 156 GitHub stars, demonstrating strong community engagement',
-          'Built AI-powered resume optimization platform using TypeScript and Python, achieving 89 GitHub stars',
-          'Architected scalable microservices infrastructure with Docker, contributing to 45-star repository',
-          'Created modern React dashboard with real-time analytics, showcasing frontend expertise',
-          'Maintained consistent development velocity with 1,247+ commits across multiple programming languages'
-        ]
+      if (!response.ok) throw new Error('GitHub analysis failed');
+      
+      const data = await response.json();
+      
+      const metrics: GitHubMetrics = {
+        username: data.username,
+        totalRepos: data.impact_metrics.total_repos,
+        totalStars: data.impact_metrics.total_stars,
+        totalCommits: data.impact_metrics.contributions_last_year,
+        topLanguages: data.tech_stack.primary_languages,
+        topRepos: data.top_repositories.map((repo: any) => ({
+          name: repo.name,
+          description: repo.description || 'No description',
+          stars: repo.stars,
+          forks: repo.forks,
+          language: repo.language || 'Unknown',
+          url: repo.url
+        })),
+        suggestedBullets: data.resume_bullet_points
       };
       
-      setMetrics(mockMetrics);
+      setMetrics(metrics);
     } catch (err) {
       setError('Failed to analyze GitHub profile. Please check the URL and try again.');
     } finally {
@@ -218,7 +205,7 @@ export const GitHubAnalysis = ({ githubUrl, onAddBulletPoint }: GitHubAnalysisPr
                 {metrics.suggestedBullets.map((bullet, index) => (
                   <div key={index} className="flex items-start gap-3 p-3 border rounded-lg">
                     <div className="flex-1">
-                      <p className="text-gray-800">{bullet}</p>
+                      <p style={{ color: '#BCBAB3' }}>{bullet}</p>
                     </div>
                     <Button
                       size="sm"

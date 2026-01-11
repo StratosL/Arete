@@ -264,12 +264,13 @@ docker-compose up --build
 - **Regeneration Options**: Users can regenerate for different versions with loading indicators
 
 ### GitHub Contribution Analyzer (Phase 6 - Complete & Production Ready)
-- **GitHub Profile Analysis**: Comprehensive analysis of GitHub profiles with impact metrics
+- **Real GitHub API Integration**: Live GitHub API calls with comprehensive profile analysis
 - **Impact Quantification**: Calculate total stars, forks, repositories, and follower counts
 - **Tech Stack Extraction**: AI-powered categorization of languages, frameworks, and tools
 - **Project Highlights**: Showcase top repositories with star/fork counts and descriptions
 - **Resume Bullet Generation**: AI-generated resume bullet points with quantified achievements
-- **Seamless Integration**: Built into resume upload workflow with "Add to Resume" functionality
+- **Persistent Integration**: GitHub data persists throughout entire workflow (upload → job analysis → optimization)
+- **Seamless UX**: Positioned after resume display with "Add to Resume" functionality for bullet points
 
 ### Comprehensive Test Suite (Phase 7 - Complete & Production Ready)
 - **Backend Testing**: 43 tests covering services, API endpoints, and integrations (100% pass rate)
