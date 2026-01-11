@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>GitHub Integration Test</title>
+</head>
+<body>
+    <h1>GitHub Integration Test</h1>
+    <button onclick="testGitHubAPI()">Test GitHub API</button>
+    <div id="result"></div>
+
+    <script>
+        async function testGitHubAPI() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = 'Testing...';
+            
+            try {
+                const response = await fetch('http://localhost:8000/github/analyze', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: 'octocat' })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                resultDiv.innerHTML = `
+                    <h2>✅ SUCCESS!</h2>
+                    <p><strong>Username:</strong> ${data.username}</p>
+                    <p><strong>Total Stars:</strong> ${data.impact_metrics.total_stars}</p>
+                    <p><strong>Total Repos:</strong> ${data.impact_metrics.total_repos}</p>
+                    <p><strong>Languages:</strong> ${data.tech_stack.primary_languages.join(', ')}</p>
+                    <h3>Resume Bullets:</h3>
+                    <ul>
+                        ${data.resume_bullet_points.map(bullet => `<li>${bullet}</li>`).join('')}
+                    </ul>
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = `<h2>❌ ERROR:</h2><p>${error.message}</p>`;
+            }
+        }
+    </script>
+</body>
+</html>

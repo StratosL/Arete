@@ -1,0 +1,16 @@
+John Doe
+Software Engineer
+Email: john@example.com
+Phone: 555-1234
+
+Experience:
+- Senior Developer at TechCorp (2020-2023)
+- Built scalable web applications using Python and React
+- Led team of 5 developers
+
+Skills:
+- Python, JavaScript, React, FastAPI
+- Docker, AWS, PostgreSQL
+
+Education:
+- BS Computer Science, Stanford University (2018)

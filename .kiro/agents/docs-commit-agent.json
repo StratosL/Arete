@@ -20,18 +20,12 @@
   ],
   "allowedTools": [
     "read",
+    "write",
     "glob",
     "grep",
     "shell"
   ],
   "toolsSettings": {
-    "write": {
-      "allowedPaths": [
-        ".kiro/devlog/devlog.md",
-        ".kiro/review-plan-steps/**/*.md",
-        "README.md"
-      ]
-    },
     "shell": {
       "allowedCommands": [
         "git status*",
