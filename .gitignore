@@ -62,6 +62,7 @@ nul
 *.tmp
 *.temp
 .cache/
+tmpclaude-*
 
 # Package manager lock files (optional - can be included for reproducible builds)
 package-lock.json
