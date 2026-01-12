@@ -180,27 +180,7 @@ export const JobDescriptionInput = ({ onAnalysisSuccess }: JobDescriptionInputPr
 
         {/* Submit Button */}
         <button
-          type="button"
-          onClick={() => {
-            logger.debug('BUTTON CLICKED - TEST');
-            
-            // Get current form values
-            const formData = control._formValues;
-            logger.debug('Current form values:', JSON.stringify(formData, null, 2));
-            logger.debug('Form errors:', JSON.stringify(errors, null, 2));
-            logger.debug('Active tab:', activeTab);
-            
-            // Try to trigger validation manually
-            handleSubmit(
-              (data) => {
-                logger.debug('Form validation PASSED, data:', JSON.stringify(data, null, 2));
-                onSubmit(data);
-              },
-              (errors) => {
-                logger.debug('Form validation FAILED, errors:', JSON.stringify(errors, null, 2));
-              }
-            )();
-          }}
+          type="submit"
           disabled={isAnalyzing}
           className={`w-full py-3 px-4 rounded-md font-medium transition-colors ${
             isAnalyzing

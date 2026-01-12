@@ -19,7 +19,7 @@ async def optimize_resume(request: OptimizationRequest):
     
     try:
         resume_data, job_analysis = await optimization_service.get_resume_job_data(
-            request.resume_id, request.job_id
+            str(request.resume_id), str(request.job_id)
         )
         
         async def generate_sse():
@@ -50,7 +50,7 @@ async def save_optimization(request: SaveOptimizationRequest):
     """Save applied optimization results to resume"""
     
     try:
-        await optimization_service.save_optimization(request.resume_id, request.optimized_data)
+        await optimization_service.save_optimization(str(request.resume_id), request.optimized_data)
         return {"status": "success", "message": "Optimization saved"}
         
     except HTTPException:
@@ -65,7 +65,7 @@ async def generate_cover_letter(request: CoverLetterRequest):
     
     try:
         resume_data, job_analysis = await optimization_service.get_resume_job_data(
-            request.resume_id, request.job_id
+            str(request.resume_id), str(request.job_id)
         )
         
         cover_letter = await optimization_service.generate_cover_letter(resume_data, job_analysis)

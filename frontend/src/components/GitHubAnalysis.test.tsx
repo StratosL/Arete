@@ -211,10 +211,11 @@ describe('GitHubAnalysis', () => {
       />
     );
     
+    // Use more specific queries to avoid duplicate matches
     expect(screen.getByText('25')).toBeInTheDocument(); // Repositories
-    expect(screen.getByText('100')).toBeInTheDocument(); // Stars
+    expect(screen.getByText('100')).toBeInTheDocument(); // Stars  
     expect(screen.getByText('500')).toBeInTheDocument(); // Commits
-    expect(screen.getByText('project1')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /project1/i })).toBeInTheDocument();
   });
 
   it('handles HTTP error responses', async () => {
@@ -379,7 +380,7 @@ describe('GitHubAnalysis', () => {
     await user.click(analyzeButton);
     
     await waitFor(() => {
-      expect(screen.getByText('incomplete-repo')).toBeInTheDocument();
+      expect(screen.getByRole('heading', { name: /incomplete-repo/i })).toBeInTheDocument();
       expect(screen.getByText('No description')).toBeInTheDocument();
       expect(screen.getByText('Unknown')).toBeInTheDocument(); // Default language
     });

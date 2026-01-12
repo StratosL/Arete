@@ -25,11 +25,11 @@ describe('DocumentExport', () => {
 
     expect(screen.getByText('Export Optimized Resume')).toBeInTheDocument();
     expect(screen.getByText('Select Template Style')).toBeInTheDocument();
-    // Use getAllByText since template name appears in both selector and "Using..." note
-    expect(screen.getAllByText('ATS Classic').length).toBeGreaterThanOrEqual(1);
-    expect(screen.getByText('Modern Professional')).toBeInTheDocument();
-    expect(screen.getByText('PDF Format')).toBeInTheDocument();
-    expect(screen.getByText('DOCX Format')).toBeInTheDocument();
+    // Use more specific queries to avoid duplicate matches
+    expect(screen.getByRole('button', { name: /ats classic/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /modern professional/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /pdf format/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /docx format/i })).toBeInTheDocument();
   });
 
   it('handles PDF export with classic template by default', async () => {

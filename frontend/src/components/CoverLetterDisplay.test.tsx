@@ -127,8 +127,8 @@ describe('CoverLetterDisplay', () => {
       expect(screen.getByText(mockCoverLetter)).toBeInTheDocument();
     });
     
-    // Download cover letter
-    const downloadButton = screen.getByRole('button', { name: /download/i });
+    // Download cover letter - use more specific selector
+    const downloadButton = screen.getByRole('button', { name: /download$/i });
     await user.click(downloadButton);
     
     expect(mockLink.click).toHaveBeenCalled();
