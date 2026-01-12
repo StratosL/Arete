@@ -1,21 +1,28 @@
 from fastapi import APIRouter, HTTPException, Path
 from fastapi.responses import Response
 
-from app.export.schemas import ExportRequest
+from app.export.schemas import ExportRequest, AVAILABLE_TEMPLATES, TemplateInfo
 from app.export.service import export_service
 
 router = APIRouter(prefix="/export", tags=["export"])
+
+
+@router.get("/templates")
+async def get_available_templates() -> list[TemplateInfo]:
+    """Get list of available resume templates"""
+    return AVAILABLE_TEMPLATES
+
 
 @router.post("/{format}")
 async def export_resume(
     format: str = Path(..., regex="^(pdf|docx)$"),
     request: ExportRequest = ...
 ) -> Response:
-    """Export optimized resume in specified format"""
-    
+    """Export optimized resume in specified format with chosen template"""
+
     try:
         file_content, content_type, filename = await export_service.export_resume(
-            request.resume_id, format
+            request.resume_id, format, request.template
         )
         
         # For PDF format (which returns HTML), adjust headers for proper browser handling

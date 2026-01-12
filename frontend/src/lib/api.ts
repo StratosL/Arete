@@ -154,25 +154,68 @@ export const optimizationApi = {
   },
 };
 
+export interface TemplateInfo {
+  id: string;
+  name: string;
+  description: string;
+  preview_image: string | null;
+}
+
 export const exportApi = {
-  exportResume: async (resumeId: string, format: 'pdf' | 'docx'): Promise<void> => {
-    const response = await apiClient.post(`/export/${format}`, 
-      { resume_id: resumeId },
+  getTemplates: async (): Promise<TemplateInfo[]> => {
+    const response = await apiClient.get<TemplateInfo[]>('/export/templates');
+    return response.data;
+  },
+
+  exportResume: async (
+    resumeId: string,
+    format: 'pdf' | 'docx',
+    template: 'classic' | 'modern' = 'classic'
+  ): Promise<void> => {
+    const response = await apiClient.post(
+      `/export/${format}`,
+      { resume_id: resumeId, template },
       { responseType: 'blob' }
     );
-    
-    const blob = new Blob([response.data], {
-      type: format === 'pdf' ? 'application/pdf' : 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-    });
-    
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `resume.${format}`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    window.URL.revokeObjectURL(url);
+
+    // Check content type to determine how to handle the response
+    const contentType = response.headers['content-type'] || '';
+
+    if (contentType.includes('text/html')) {
+      // Modern template returns HTML - open in new tab for browser print
+      const htmlBlob = new Blob([response.data], { type: 'text/html' });
+      const url = window.URL.createObjectURL(htmlBlob);
+      const printWindow = window.open(url, '_blank');
+
+      if (printWindow) {
+        printWindow.onload = () => {
+          // Add a small delay to ensure styles are loaded
+          setTimeout(() => {
+            printWindow.print();
+          }, 500);
+        };
+      }
+
+      // Clean up after a delay
+      setTimeout(() => {
+        window.URL.revokeObjectURL(url);
+      }, 60000);
+    } else {
+      // Classic template returns direct PDF/DOCX - download
+      const mimeType = format === 'pdf'
+        ? 'application/pdf'
+        : 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+
+      const blob = new Blob([response.data], { type: mimeType });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `resume.${format}`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    }
   },
 };
 

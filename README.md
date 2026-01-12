@@ -8,7 +8,7 @@ Arete is an AI-powered job application optimizer specifically designed for tech 
 
 **🎯 Current Status**: Production Ready - 100% System Validation (10/10 tests passed)
 **🚀 Live Demo**: Complete workflow validated - Upload → Parse → Job Analysis → AI Optimization → Cover Letter Generation → Export Optimized Documents
-**⚡ Tech Stack**: FastAPI + React + TypeScript + Supabase + Claude API + ReportLab
+**⚡ Tech Stack**: FastAPI + React + TypeScript + Supabase + Claude API + ReportLab + Template System
 **✅ Production Ready**: All MVP features operational with 94.4% test coverage and 100% pass rate
 
 ---
@@ -258,6 +258,9 @@ docker-compose up --build
 - **ATS Compliance**: Keyword density optimization and compliance scoring for applicant tracking systems
 - **Tech-Specific Intelligence**: Framework-aware recommendations (React vs Angular, AWS vs GCP, etc.)
 - **Document Export**: Professional PDF (ReportLab) and DOCX generation with ATS-compliant formatting
+- **Template Selection**: Choose between ATS Classic (maximum compatibility) and Modern Professional (clean design with accent colors)
+- **Smart Project Ordering**: Resume-sourced projects displayed first, GitHub projects grouped at the end
+- **Enhanced Skills Categorization**: 300+ known skills with intelligent categorization (Languages, Frontend, Backend, Database, DevOps, Cloud, Tools)
 - **Download Integration**: Seamless browser downloads with proper file handling and MIME types
 
 ### Cover Letter Generation (Phase 5 - Complete & Production Ready)
@@ -311,10 +314,22 @@ docker-compose up --build
 - ✅ **Phase 1**: Resume Upload & Parsing with GitHub integration
 - ✅ **Phase 2**: Job Description Analysis with URL scraping
 - ✅ **Phase 3**: AI Optimization with real-time SSE streaming
-- ✅ **Phase 4**: Document Export with PDF and DOCX generation
+- ✅ **Phase 4**: Document Export with PDF and DOCX generation + template selection
 - ✅ **Phase 5**: Cover Letter Generation with personalized content
 - ✅ **Phase 6**: GitHub Contribution Analyzer with impact metrics
-- ✅ **Phase 7**: Comprehensive Test Suite with 66 tests (100% pass rate)
+- ✅ **Phase 7**: Comprehensive Test Suite with 144 tests (100% pass rate)
+
+### Resume Templates
+
+| Template | Description | Best For |
+|----------|-------------|----------|
+| **ATS Classic** | Single-column, maximum ATS compatibility | Traditional companies, large corporations |
+| **Modern Professional** | Clean design with accent colors and improved typography | Startups, tech companies, creative roles |
+
+Both templates feature:
+- **Smart Project Ordering**: Resume projects displayed first, GitHub projects grouped at end
+- **Intelligent Skills Categorization**: 300+ skills automatically categorized into Languages, Frontend, Backend, Database, DevOps, Cloud, and Tools
+- **ATS-Friendly Formatting**: Clean structure optimized for applicant tracking systems
 
 ## Architecture & Codebase Overview
 
@@ -336,6 +351,7 @@ arete/
 │   │   ├── jobs/          # Job analysis feature slice ✅
 │   │   ├── optimization/  # AI optimization feature slice ✅
 │   │   ├── export/        # Document export feature slice ✅
+│   │   │   └── templates/ # CSS templates (modern.css) ✅
 │   │   └── github/        # GitHub analysis feature slice ✅
 ├── frontend/
 │   ├── src/components/    # React components ✅
@@ -357,8 +373,9 @@ arete/
 - **Job Analysis Endpoint** (`backend/app/jobs/routes.py`): POST /jobs/analyze with dual input modes
 - **Optimization Service** (`backend/app/optimization/service.py`): AI-powered resume optimization with SSE streaming
 - **Optimization Endpoints** (`backend/app/optimization/routes.py`): GET /optimize and POST /optimize/save
-- **Export Service** (`backend/app/export/service.py`): PDF/DOCX generation with ReportLab and python-docx
-- **Export Endpoints** (`backend/app/export/routes.py`): POST /export/{format} for document generation
+- **Export Service** (`backend/app/export/service.py`): PDF/DOCX generation with ReportLab, template support, and 300+ skill categorization
+- **Export Templates** (`backend/app/export/templates/`): CSS templates for Modern Professional styling
+- **Export Endpoints** (`backend/app/export/routes.py`): POST /export/{format} and GET /export/templates for document generation
 - **GitHub Service** (`backend/app/github/service.py`): GitHub API integration and impact metrics calculation
 - **GitHub Endpoints** (`backend/app/github/routes.py`): POST /github/analyze for profile analysis
 - **ResumeUpload Component** (`frontend/src/components/ResumeUpload.tsx`): Drag-and-drop interface
@@ -366,7 +383,7 @@ arete/
 - **JobDescriptionInput Component** (`frontend/src/components/JobDescriptionInput.tsx`): Dual-mode job input
 - **JobAnalysisDisplay Component** (`frontend/src/components/JobAnalysisDisplay.tsx`): Structured job insights
 - **OptimizationDisplay Component** (`frontend/src/components/OptimizationDisplay.tsx`): Real-time optimization with Apply Suggestions
-- **DocumentExport Component** (`frontend/src/components/DocumentExport.tsx`): Professional document download interface
+- **DocumentExport Component** (`frontend/src/components/DocumentExport.tsx`): Template selection and professional document download interface
 - **GitHubAnalysis Component** (`frontend/src/components/GitHubAnalysis.tsx`): GitHub metrics and bullet point generation
 - **API Contracts** (`api-contracts.yaml`): OpenAPI specification for all endpoints
 - **Database Migrations** (`supabase/migrations/`): Schema versioning and deployment consistency
@@ -381,7 +398,8 @@ arete/
 5. **AI Optimization**: Real-time SSE streaming with personalized suggestions
 6. **Apply Suggestions**: Review and selectively apply optimization recommendations
 7. **Cover Letter Generation**: Generate personalized cover letters with company-specific content
-8. **Document Export**: Download optimized PDF/DOCX and cover letter files
+8. **Template Selection**: Choose ATS Classic (maximum compatibility) or Modern Professional (clean design)
+9. **Document Export**: Download optimized PDF/DOCX with smart project ordering and skills categorization
 
 ### Resume Processing Pipeline
 1. **File Upload**: Accepts PDF/DOCX/TXT files up to 10MB
@@ -406,11 +424,14 @@ arete/
 6. **Persistence**: Save applied optimizations to database for export
 
 ### Document Export Pipeline
-1. **Data Retrieval**: Fetch optimized resume data (fallback to original if not optimized)
-2. **PDF Generation**: ReportLab creates ATS-compliant single-column PDFs
-3. **DOCX Generation**: python-docx creates professional Microsoft Word documents
-4. **File Delivery**: Browser download with proper MIME types and filenames
-5. **Format Support**: Both PDF and DOCX with identical content and formatting
+1. **Template Selection**: Choose between ATS Classic or Modern Professional templates
+2. **Data Retrieval**: Fetch optimized resume data (fallback to original if not optimized)
+3. **Smart Ordering**: Projects sorted with resume-sourced first, GitHub projects grouped at end
+4. **Skills Processing**: 300+ skills categorized via quick-match + LLM fallback with validation
+5. **PDF Generation**: ReportLab (Classic) or HTML/CSS (Modern) creates professional PDFs
+6. **DOCX Generation**: python-docx creates professional Microsoft Word documents
+7. **File Delivery**: Browser download with proper MIME types and filenames
+8. **Format Support**: Both PDF and DOCX with template-aware formatting
 
 ### Enhanced Orchestrator Strategy
 - **Parallel Development**: Backend, Frontend, Infrastructure agents work simultaneously
@@ -465,6 +486,8 @@ arete/
 - ✅ ATS-compliant structured data extraction
 - ✅ Real-time AI optimization with streaming feedback
 - ✅ Professional document export (PDF + DOCX formats)
+- ✅ Template selection (ATS Classic + Modern Professional)
+- ✅ Smart skills categorization (300+ skills across 7 categories)
 - ✅ Optimization persistence - exported documents contain applied AI suggestions
 - ✅ Production-ready error handling and user feedback
 
