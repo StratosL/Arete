@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react';
 import { Upload, FileText, Github } from 'lucide-react';
 import { resumeApi } from '@/lib/api';
 import { ResumeData } from '@/types';
+import { logger } from '@/lib/logger';
 
 interface ResumeUploadProps {
   // eslint-disable-next-line no-unused-vars
@@ -53,27 +54,27 @@ export const ResumeUpload = ({ onUploadSuccess, githubUrl, setGithubUrl }: Resum
       return;
     }
 
-    console.log('Starting upload with:', { fileName: file.name, githubUrl });
+    logger.debug('Starting upload with:', { fileName: file.name, githubUrl });
     setIsUploading(true);
     setError(null);
 
     try {
       const response = await resumeApi.uploadResume(file, githubUrl || undefined);
-      console.log('Full upload response:', JSON.stringify(response, null, 2));
+      logger.debug('Full upload response:', JSON.stringify(response, null, 2));
 
       if (!response) {
         throw new Error('No response received from server');
       }
 
       if (response.data) {
-        console.log('Upload successful, resume data:', response.data);
+        logger.debug('Upload successful, resume data:', response.data);
         onUploadSuccess(response.data);
       } else {
-        console.error('Upload response missing data field:', response);
+        logger.error('Upload response missing data field:', response);
         setError(response.message || 'Upload failed - no data returned');
       }
     } catch (err: any) {
-      console.error('Upload error details:', {
+      logger.error('Upload error details:', {
         message: err.message,
         response: err.response?.data,
         status: err.response?.status,

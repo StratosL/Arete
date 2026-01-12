@@ -5,6 +5,7 @@ import { z } from 'zod';
 import { FileText, Link, Briefcase } from 'lucide-react';
 import { jobsApi } from '@/lib/api';
 import { JobAnalysis, JobAnalysisRequest } from '@/types';
+import { logger } from '@/lib/logger';
 
 const jobAnalysisSchema = z.object({
   job_text: z.string().optional(),
@@ -48,8 +49,8 @@ export const JobDescriptionInput = ({ onAnalysisSuccess }: JobDescriptionInputPr
   };
 
   const onSubmit = async (data: JobAnalysisForm) => {
-    console.log('Form submitted with data:', data);
-    console.log('Active tab:', activeTab);
+    logger.debug('Form submitted with data:', data);
+    logger.debug('Active tab:', activeTab);
     
     setIsAnalyzing(true);
     setError(null);
@@ -59,13 +60,13 @@ export const JobDescriptionInput = ({ onAnalysisSuccess }: JobDescriptionInputPr
         ? { job_text: data.job_text }
         : { job_url: data.job_url };
 
-      console.log('Sending request:', requestData);
+      logger.debug('Sending request:', requestData);
       const response = await jobsApi.analyzeJob(requestData);
       
       onAnalysisSuccess(response);
       reset();
     } catch (err: any) {
-      console.error('Analysis error:', err);
+      logger.error('Analysis error:', err);
       setError(err.response?.data?.detail || 'Analysis failed. Please try again.');
     } finally {
       setIsAnalyzing(false);
@@ -181,22 +182,22 @@ export const JobDescriptionInput = ({ onAnalysisSuccess }: JobDescriptionInputPr
         <button
           type="button"
           onClick={() => {
-            console.log('BUTTON CLICKED - TEST');
+            logger.debug('BUTTON CLICKED - TEST');
             
             // Get current form values
             const formData = control._formValues;
-            console.log('Current form values:', JSON.stringify(formData, null, 2));
-            console.log('Form errors:', JSON.stringify(errors, null, 2));
-            console.log('Active tab:', activeTab);
+            logger.debug('Current form values:', JSON.stringify(formData, null, 2));
+            logger.debug('Form errors:', JSON.stringify(errors, null, 2));
+            logger.debug('Active tab:', activeTab);
             
             // Try to trigger validation manually
             handleSubmit(
               (data) => {
-                console.log('Form validation PASSED, data:', JSON.stringify(data, null, 2));
+                logger.debug('Form validation PASSED, data:', JSON.stringify(data, null, 2));
                 onSubmit(data);
               },
               (errors) => {
-                console.log('Form validation FAILED, errors:', JSON.stringify(errors, null, 2));
+                logger.debug('Form validation FAILED, errors:', JSON.stringify(errors, null, 2));
               }
             )();
           }}

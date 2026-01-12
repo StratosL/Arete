@@ -14,5 +14,6 @@ module.exports = {
     ],
     'no-unused-vars': 'warn',
     'no-undef': 'off', // TypeScript handles this
+    'no-console': ['error', { allow: ['error', 'info'] }], // Prevent console.log, allow console.error and console.info
   },
 }

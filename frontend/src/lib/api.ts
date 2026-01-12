@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { ResumeUploadResponse, JobAnalysisRequest, JobAnalysis, OptimizationRequest } from '@/types';
+import { logger } from './logger';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
@@ -10,7 +11,7 @@ const apiClient = axios.create({
 
 export const resumeApi = {
   uploadResume: async (file: File, githubUrl?: string): Promise<ResumeUploadResponse> => {
-    console.log('API: Starting resume upload', { 
+    logger.debug('API: Starting resume upload', { 
       fileName: file.name, 
       fileSize: file.size, 
       fileType: file.type,
@@ -30,7 +31,7 @@ export const resumeApi = {
         },
       });
 
-      console.log('API: Upload response received', {
+      logger.debug('API: Upload response received', {
         status: response.status,
         statusText: response.statusText,
         data: response.data
@@ -47,7 +48,7 @@ export const resumeApi = {
 
       return response.data;
     } catch (error: any) {
-      console.error('API: Upload failed', {
+      logger.error('API: Upload failed', {
         message: error.message,
         status: error.response?.status,
         statusText: error.response?.statusText,
@@ -88,7 +89,7 @@ export const optimizationApi = {
   },
 
   generateCoverLetter: async (resumeId: string, jobId: string): Promise<{ cover_letter: string }> => {
-    console.log('generateCoverLetter API called with:', { resumeId, jobId });
+    logger.debug('generateCoverLetter API called with:', { resumeId, jobId });
     
     try {
       const response = await apiClient.post('/optimize/cover-letter', {
@@ -96,7 +97,7 @@ export const optimizationApi = {
         job_id: jobId,
       });
       
-      console.log('generateCoverLetter API response:', response);
+      logger.debug('generateCoverLetter API response:', response);
       
       if (!response.data) {
         throw new Error('No data in response');
@@ -104,7 +105,7 @@ export const optimizationApi = {
       
       return response.data;
     } catch (error) {
-      console.error('generateCoverLetter API error:', error);
+      logger.error('generateCoverLetter API error:', error);
       throw error;
     }
   },

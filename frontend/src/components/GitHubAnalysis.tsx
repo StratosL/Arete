@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Github, Star, GitFork, Code, TrendingUp, Plus, CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { logger } from '@/lib/logger';
 
 interface GitHubRepo {
   name: string;
@@ -30,7 +31,7 @@ interface GitHubAnalysisProps {
 }
 
 export const GitHubAnalysis = ({ githubUrl, onAddBulletPoint, metrics, setMetrics }: GitHubAnalysisProps) => {
-  console.log('GitHubAnalysis rendered with:', { githubUrl });
+  logger.debug('GitHubAnalysis rendered with:', { githubUrl });
   
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string>('');
