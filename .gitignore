@@ -48,6 +48,9 @@ pids
 ehthumbs.db
 Thumbs.db
 
+# Windows artifacts
+nul
+
 # IDE & Editor
 .vscode/
 .idea/

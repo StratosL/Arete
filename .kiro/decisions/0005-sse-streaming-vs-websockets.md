@@ -317,3 +317,4 @@ eventSource.onerror = (error) => {
 * [FastAPI Streaming Response](https://fastapi.tiangolo.com/advanced/custom-response/#streamingresponse)
 * Implementation: `backend/app/optimization/routes.py`
 * Frontend hook: `frontend/src/hooks/useOptimizationStream.ts`
+* https://medium.com/@serifcolakel/real-time-data-streaming-with-server-sent-events-sse-9424c933e094
