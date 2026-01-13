@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { ResumeData, JobAnalysis, OptimizationProgress, OptimizationSuggestion } from '@/types';
+import { ResumeData, JobAnalysis, OptimizationProgress, OptimizationSuggestion, ATSScore, InterviewQuestion } from '@/types';
 import { optimizationApi } from '@/lib/api';
-import { Zap, CheckCircle, AlertCircle, Loader2, Play, Square, Lightbulb, TrendingUp, Save } from 'lucide-react';
+import { Zap, CheckCircle, AlertCircle, Loader2, Play, Square, Lightbulb, TrendingUp, Save, Target, BookOpen, ChevronDown, ChevronUp, MessageSquare, Code, Users, Briefcase } from 'lucide-react';
 
 interface OptimizationDisplayProps {
   resumeData: ResumeData;
@@ -15,12 +15,18 @@ export const OptimizationDisplay = ({ resumeData, jobAnalysis }: OptimizationDis
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [atsScore, setAtsScore] = useState<ATSScore | null>(null);
+  const [interviewQuestions, setInterviewQuestions] = useState<InterviewQuestion[]>([]);
+  const [showInterviewQuestions, setShowInterviewQuestions] = useState(false);
 
   const startOptimization = async () => {
     setIsOptimizing(true);
     setAllSuggestions([]);
     setCurrentProgress(null);
     setError(null);
+    setAtsScore(null);
+    setInterviewQuestions([]);
+    setShowInterviewQuestions(false);
 
     try {
       const response = await optimizationApi.startOptimization({
@@ -40,6 +46,7 @@ export const OptimizationDisplay = ({ resumeData, jobAnalysis }: OptimizationDis
       const decoder = new TextDecoder();
       let buffer = '';
 
+      // eslint-disable-next-line no-constant-condition -- SSE streaming loop pattern
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
@@ -56,6 +63,12 @@ export const OptimizationDisplay = ({ resumeData, jobAnalysis }: OptimizationDis
               if (data.suggestions?.length > 0) {
                 setAllSuggestions(data.suggestions);
               }
+              if (data.ats_score) {
+                setAtsScore(data.ats_score);
+              }
+              if (data.interview_questions?.length > 0) {
+                setInterviewQuestions(data.interview_questions);
+              }
               if (data.completed) {
                 setIsOptimizing(false);
                 return;
@@ -66,8 +79,9 @@ export const OptimizationDisplay = ({ resumeData, jobAnalysis }: OptimizationDis
           }
         }
       }
-    } catch (err: any) {
-      setError(err.message || 'Optimization failed');
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Optimization failed';
+      setError(errorMessage);
       setIsOptimizing(false);
     }
   };
@@ -111,6 +125,28 @@ export const OptimizationDisplay = ({ resumeData, jobAnalysis }: OptimizationDis
       case 'low': return <CheckCircle className="w-4 h-4 text-green-600" />;
       default: return <Lightbulb className="w-4 h-4 text-blue-600" />;
     }
+  };
+
+  const getQuestionCategoryIcon = (category: string) => {
+    switch (category) {
+      case 'technical': return <Code className="w-4 h-4 text-blue-600" />;
+      case 'behavioral': return <Users className="w-4 h-4 text-green-600" />;
+      case 'system_design': return <Target className="w-4 h-4 text-purple-600" />;
+      case 'role_specific': return <Briefcase className="w-4 h-4 text-orange-600" />;
+      default: return <MessageSquare className="w-4 h-4 text-gray-600" />;
+    }
+  };
+
+  const getScoreColor = (score: number) => {
+    if (score >= 80) return 'text-green-600';
+    if (score >= 60) return 'text-yellow-600';
+    return 'text-red-600';
+  };
+
+  const getScoreBgColor = (score: number) => {
+    if (score >= 80) return 'bg-green-100 border-green-300';
+    if (score >= 60) return 'bg-yellow-100 border-yellow-300';
+    return 'bg-red-100 border-red-300';
   };
 
   return (
@@ -184,6 +220,77 @@ export const OptimizationDisplay = ({ resumeData, jobAnalysis }: OptimizationDis
         </div>
       </div>
 
+      {/* ATS Score Section */}
+      {atsScore && (
+        <div className="bg-secondary/50 rounded-lg border p-6">
+          <div className="flex items-center space-x-2 mb-4">
+            <Target className="w-5 h-5 text-blue-600" />
+            <h3 className="text-lg font-semibold text-gray-900">ATS Compatibility Score</h3>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Overall Score */}
+            <div className={`text-center p-4 rounded-lg border ${getScoreBgColor(atsScore.overall_score)}`}>
+              <div className={`text-4xl font-bold ${getScoreColor(atsScore.overall_score)}`}>
+                {atsScore.overall_score}
+              </div>
+              <div className="text-sm text-gray-600 mt-1">Overall Score</div>
+            </div>
+
+            {/* Keyword Match */}
+            <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
+              <div className="text-2xl font-bold text-blue-700">
+                {atsScore.keyword_match.matched}/{atsScore.keyword_match.total}
+              </div>
+              <div className="text-sm text-gray-600 mt-1">Keywords Matched</div>
+              <div className="text-xs text-blue-600 mt-2">
+                {atsScore.keyword_match.percentage}% match rate
+              </div>
+            </div>
+
+            {/* Section Completeness */}
+            <div className="p-4 bg-purple-50 rounded-lg border border-purple-200">
+              <div className="text-2xl font-bold text-purple-700">
+                {atsScore.section_completeness}%
+              </div>
+              <div className="text-sm text-gray-600 mt-1">Section Completeness</div>
+              <div className="text-xs text-purple-600 mt-2">
+                {atsScore.sections.filter(s => s.present).length}/{atsScore.sections.length} sections
+              </div>
+            </div>
+          </div>
+
+          {/* Keyword Details */}
+          {atsScore.keyword_match.missing_keywords.length > 0 && (
+            <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+              <div className="text-sm font-medium text-yellow-800 mb-2">Missing Keywords:</div>
+              <div className="flex flex-wrap gap-2">
+                {atsScore.keyword_match.missing_keywords.map((keyword, index) => (
+                  <span key={index} className="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full">
+                    {keyword}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Recommendations */}
+          {atsScore.recommendations.length > 0 && (
+            <div className="mt-4">
+              <div className="text-sm font-medium text-gray-700 mb-2">Recommendations:</div>
+              <ul className="space-y-1">
+                {atsScore.recommendations.map((rec, index) => (
+                  <li key={index} className="flex items-start space-x-2 text-sm text-gray-600">
+                    <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                    <span>{rec}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Optimization Suggestions */}
       {allSuggestions.length > 0 && (
         <div className="bg-secondary/50 rounded-lg border p-6">
@@ -250,6 +357,54 @@ export const OptimizationDisplay = ({ resumeData, jobAnalysis }: OptimizationDis
               </div>
             ))}
           </div>
+        </div>
+      )}
+
+      {/* Interview Preparation Section */}
+      {interviewQuestions.length > 0 && (
+        <div className="bg-secondary/50 rounded-lg border p-6">
+          <button
+            onClick={() => setShowInterviewQuestions(!showInterviewQuestions)}
+            className="w-full flex items-center justify-between"
+          >
+            <div className="flex items-center space-x-2">
+              <BookOpen className="w-5 h-5 text-blue-600" />
+              <h3 className="text-lg font-semibold text-gray-900">
+                Interview Preparation ({interviewQuestions.length} Questions)
+              </h3>
+            </div>
+            {showInterviewQuestions ? (
+              <ChevronUp className="w-5 h-5 text-gray-500" />
+            ) : (
+              <ChevronDown className="w-5 h-5 text-gray-500" />
+            )}
+          </button>
+
+          {showInterviewQuestions && (
+            <div className="mt-4 space-y-4">
+              {interviewQuestions.map((question, index) => (
+                <div key={index} className="p-4 bg-white rounded-lg border shadow-sm">
+                  <div className="flex items-start space-x-3">
+                    <div className="flex-shrink-0 mt-1">
+                      {getQuestionCategoryIcon(question.category)}
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center space-x-2 mb-2">
+                        <span className="px-2 py-0.5 bg-gray-100 text-gray-700 text-xs rounded-full capitalize">
+                          {question.category.replace('_', ' ')}
+                        </span>
+                      </div>
+                      <p className="text-gray-900 font-medium mb-2">{question.question}</p>
+                      <div className="flex items-start space-x-2 text-sm text-gray-600 bg-blue-50 p-2 rounded">
+                        <Lightbulb className="w-4 h-4 text-blue-500 mt-0.5 flex-shrink-0" />
+                        <span>{question.tips}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
     </div>

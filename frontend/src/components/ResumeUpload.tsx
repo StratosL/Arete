@@ -5,11 +5,9 @@ import { ResumeData } from '@/types';
 import { logger } from '@/lib/logger';
 
 interface ResumeUploadProps {
-  // eslint-disable-next-line no-unused-vars
-  onUploadSuccess: (resumeData: ResumeData) => void;
+  onUploadSuccess: (_resumeData: ResumeData) => void;
   githubUrl: string;
-  // eslint-disable-next-line no-unused-vars
-  setGithubUrl: (url: string) => void;
+  setGithubUrl: (_url: string) => void;
 }
 
 export const ResumeUpload = ({ onUploadSuccess, githubUrl, setGithubUrl }: ResumeUploadProps) => {

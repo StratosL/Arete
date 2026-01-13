@@ -84,10 +84,40 @@ export interface OptimizationSuggestion {
   accepted?: boolean;
 }
 
+export interface KeywordMatchScore {
+  matched: number;
+  total: number;
+  percentage: number;
+  matched_keywords: string[];
+  missing_keywords: string[];
+}
+
+export interface SectionScore {
+  name: string;
+  present: boolean;
+  score: number;
+}
+
+export interface ATSScore {
+  overall_score: number;
+  keyword_match: KeywordMatchScore;
+  section_completeness: number;
+  sections: SectionScore[];
+  recommendations: string[];
+}
+
+export interface InterviewQuestion {
+  category: string;
+  question: string;
+  tips: string;
+}
+
 export interface OptimizationProgress {
   step: string;
   progress: number;
   message: string;
   suggestions: OptimizationSuggestion[];
   completed: boolean;
+  ats_score?: ATSScore;
+  interview_questions?: InterviewQuestion[];
 }

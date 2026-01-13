@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 from uuid import UUID
 from pydantic import BaseModel
 
@@ -37,6 +38,38 @@ class OptimizationSuggestion(BaseModel):
     impact: str   # "high", "medium", "low"
 
 
+class KeywordMatchScore(BaseModel):
+    """Keyword matching breakdown for ATS scoring"""
+    matched: int
+    total: int
+    percentage: int
+    matched_keywords: list[str] = []
+    missing_keywords: list[str] = []
+
+
+class SectionScore(BaseModel):
+    """Individual section score for ATS"""
+    name: str
+    present: bool
+    score: int  # 0-100
+
+
+class ATSScore(BaseModel):
+    """ATS compatibility score breakdown"""
+    overall_score: int  # 0-100
+    keyword_match: KeywordMatchScore
+    section_completeness: int  # 0-100
+    sections: list[SectionScore] = []
+    recommendations: list[str] = []
+
+
+class InterviewQuestion(BaseModel):
+    """Interview preparation question"""
+    category: str  # "technical", "behavioral", "system_design", "role_specific"
+    question: str
+    tips: str  # Brief tips for answering
+
+
 class OptimizationProgress(BaseModel):
     """Progress update for SSE streaming"""
     step: str
@@ -44,3 +77,5 @@ class OptimizationProgress(BaseModel):
     message: str
     suggestions: list[OptimizationSuggestion] = []
     completed: bool = False
+    ats_score: Optional[ATSScore] = None
+    interview_questions: list[InterviewQuestion] = []

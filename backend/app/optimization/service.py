@@ -6,7 +6,14 @@ from fastapi import HTTPException
 
 from app.core.database import get_supabase_service_client
 from app.core.llm import stream_llm_response
-from app.optimization.schemas import OptimizationProgress, OptimizationSuggestion
+from app.optimization.schemas import (
+    ATSScore,
+    InterviewQuestion,
+    KeywordMatchScore,
+    OptimizationProgress,
+    OptimizationSuggestion,
+    SectionScore,
+)
 
 
 class OptimizationService:
@@ -51,14 +58,18 @@ class OptimizationService:
         self, resume_data: dict, job_analysis: dict
     ) -> AsyncGenerator[OptimizationProgress, None]:
         """Stream optimization suggestions for resume based on job requirements"""
-        
-        # Step 1: Analyze alignment
+
+        # Calculate initial ATS score
+        ats_score = self._calculate_ats_score(resume_data, job_analysis)
+
+        # Step 1: Analyze alignment and show initial ATS score
         yield OptimizationProgress(
             step="analyzing",
             progress=10,
             message="Analyzing resume-job alignment...",
             suggestions=[],
-            completed=False
+            completed=False,
+            ats_score=ats_score
         )
         await asyncio.sleep(1)
 
@@ -68,18 +79,20 @@ class OptimizationService:
             progress=30,
             message="Identifying missing keywords...",
             suggestions=[],
-            completed=False
+            completed=False,
+            ats_score=ats_score
         )
         await asyncio.sleep(2)
 
         keyword_suggestions = await self._generate_keyword_suggestions(resume_data, job_analysis)
-        
+
         yield OptimizationProgress(
             step="keywords",
             progress=50,
             message="Generated keyword suggestions",
             suggestions=keyword_suggestions,
-            completed=False
+            completed=False,
+            ats_score=ats_score
         )
         await asyncio.sleep(1)
 
@@ -89,7 +102,8 @@ class OptimizationService:
             progress=70,
             message="Enhancing experience descriptions...",
             suggestions=keyword_suggestions,
-            completed=False
+            completed=False,
+            ats_score=ats_score
         )
         await asyncio.sleep(2)
 
@@ -98,22 +112,42 @@ class OptimizationService:
 
         yield OptimizationProgress(
             step="experience",
-            progress=90,
+            progress=85,
             message="Enhanced experience descriptions",
             suggestions=all_suggestions,
-            completed=False
+            completed=False,
+            ats_score=ats_score
         )
         await asyncio.sleep(1)
 
-        # Step 4: Final optimization
+        # Step 4: Generate interview questions
+        yield OptimizationProgress(
+            step="interview",
+            progress=92,
+            message="Generating interview preparation questions...",
+            suggestions=all_suggestions,
+            completed=False,
+            ats_score=ats_score
+        )
+        await asyncio.sleep(1)
+
+        interview_questions = await self._generate_interview_questions(resume_data, job_analysis)
+
+        # Step 5: Final optimization complete
         suggestion_count = len(all_suggestions)
-        completion_msg = f"Optimization complete! Generated {suggestion_count} suggestions."
+        question_count = len(interview_questions)
+        completion_msg = (
+            f"Optimization complete! Generated {suggestion_count} suggestions "
+            f"and {question_count} interview questions."
+        )
         yield OptimizationProgress(
             step="complete",
             progress=100,
             message=completion_msg,
             suggestions=all_suggestions,
-            completed=True
+            completed=True,
+            ats_score=ats_score,
+            interview_questions=interview_questions
         )
 
     async def generate_cover_letter(self, resume_data: dict, job_analysis: dict) -> str:
@@ -302,7 +336,7 @@ class OptimizationService:
                 json_str = json_str[7:-3]
             elif json_str.startswith('```'):
                 json_str = json_str[3:-3]
-            
+
             suggestions_data = json.loads(json_str)
             return [OptimizationSuggestion(**suggestion) for suggestion in suggestions_data]
         except (json.JSONDecodeError, Exception):
@@ -314,6 +348,179 @@ class OptimizationService:
                 reason="Improve alignment with job requirements",
                 impact="high"
             )]
+
+    def _calculate_ats_score(
+        self, resume_data: dict, job_analysis: dict
+    ) -> ATSScore:
+        """Calculate ATS compatibility score based on resume-job alignment"""
+
+        # Get existing skills and job requirements
+        existing_skills = self._get_existing_skills(resume_data)
+
+        # Calculate keyword match score (50% weight)
+        required_skills = [s.lower().strip() for s in job_analysis.get('required_skills', [])]
+        technologies = [t.lower().strip() for t in job_analysis.get('technologies', [])]
+        all_required = list(set(required_skills + technologies))
+
+        matched_keywords = [kw for kw in all_required if kw in existing_skills]
+        missing_keywords = [kw for kw in all_required if kw not in existing_skills]
+
+        total_keywords = len(all_required) if all_required else 1
+        keyword_percentage = int((len(matched_keywords) / total_keywords) * 100)
+
+        keyword_score = KeywordMatchScore(
+            matched=len(matched_keywords),
+            total=total_keywords,
+            percentage=keyword_percentage,
+            matched_keywords=matched_keywords[:10],  # Limit to top 10
+            missing_keywords=missing_keywords[:10]   # Limit to top 10
+        )
+
+        # Calculate section completeness score (30% weight)
+        sections = []
+        section_checks = [
+            ("Contact Info", bool(resume_data.get('personal_info', {}).get('email'))),
+            ("Experience", len(resume_data.get('experience', [])) > 0),
+            ("Skills", len(existing_skills) > 0),
+            ("Education", len(resume_data.get('education', [])) > 0),
+            ("Projects", len(resume_data.get('projects', [])) > 0),
+        ]
+
+        present_sections = 0
+        for name, present in section_checks:
+            score = 100 if present else 0
+            sections.append(SectionScore(name=name, present=present, score=score))
+            if present:
+                present_sections += 1
+
+        section_completeness = int((present_sections / len(section_checks)) * 100)
+
+        # Calculate overall score (weighted)
+        # Keyword match: 50%, Section completeness: 30%, Base structure: 20%
+        base_score = 20  # Base points for having a parseable resume
+        overall_score = int(
+            (keyword_percentage * 0.5) +
+            (section_completeness * 0.3) +
+            base_score
+        )
+        overall_score = min(100, max(0, overall_score))  # Clamp to 0-100
+
+        # Generate recommendations
+        recommendations = []
+        if keyword_percentage < 60:
+            recommendations.append(
+                f"Add {len(missing_keywords)} missing keywords to improve ATS matching"
+            )
+        if not resume_data.get('personal_info', {}).get('email'):
+            recommendations.append("Add contact email for recruiter follow-up")
+        if len(resume_data.get('experience', [])) == 0:
+            recommendations.append("Add work experience section")
+        if len(resume_data.get('projects', [])) == 0:
+            recommendations.append("Add projects to showcase technical skills")
+        if keyword_percentage >= 80 and section_completeness >= 80:
+            recommendations.append("Resume is well-optimized for ATS systems")
+
+        return ATSScore(
+            overall_score=overall_score,
+            keyword_match=keyword_score,
+            section_completeness=section_completeness,
+            sections=sections,
+            recommendations=recommendations[:5]  # Limit to 5 recommendations
+        )
+
+    async def _generate_interview_questions(
+        self, resume_data: dict, job_analysis: dict
+    ) -> list[InterviewQuestion]:
+        """Generate role-specific interview preparation questions"""
+
+        job_title = job_analysis.get('title', 'Software Engineer')
+        company = job_analysis.get('company', 'the company')
+        technologies = job_analysis.get('technologies', [])[:5]
+        requirements = job_analysis.get('key_requirements', [])[:3]
+        experience_level = job_analysis.get('experience_level', 'mid-level')
+
+        prompt = f"""
+        Generate 5 interview preparation questions for a {experience_level} {job_title} role at {company}.
+
+        Required Technologies: {', '.join(technologies)}
+        Key Requirements: {', '.join(requirements)}
+
+        Return ONLY a JSON array with exactly 5 questions in this format:
+        [
+            {{
+                "category": "technical",
+                "question": "Specific technical question about a required technology",
+                "tips": "Brief tip for answering (1-2 sentences)"
+            }},
+            {{
+                "category": "behavioral",
+                "question": "Behavioral question using STAR method format",
+                "tips": "Brief tip for answering"
+            }},
+            {{
+                "category": "system_design",
+                "question": "System design or architecture question",
+                "tips": "Brief tip for answering"
+            }},
+            {{
+                "category": "role_specific",
+                "question": "Question specific to this role and company",
+                "tips": "Brief tip for answering"
+            }},
+            {{
+                "category": "technical",
+                "question": "Another technical question about required skills",
+                "tips": "Brief tip for answering"
+            }}
+        ]
+
+        Make questions specific to the technologies and requirements listed.
+        """
+
+        messages = [{"role": "user", "content": prompt}]
+        response_text = ""
+
+        async for chunk in stream_llm_response(messages):
+            response_text += chunk
+
+        try:
+            json_str = response_text.strip()
+            if json_str.startswith('```json'):
+                json_str = json_str[7:-3]
+            elif json_str.startswith('```'):
+                json_str = json_str[3:-3]
+
+            questions_data = json.loads(json_str)
+            return [InterviewQuestion(**q) for q in questions_data[:5]]
+        except (json.JSONDecodeError, Exception):
+            # Return default questions if parsing fails
+            return [
+                InterviewQuestion(
+                    category="technical",
+                    question=f"Describe your experience with {technologies[0] if technologies else 'relevant technologies'}.",
+                    tips="Use specific examples from past projects with metrics."
+                ),
+                InterviewQuestion(
+                    category="behavioral",
+                    question="Tell me about a challenging project and how you overcame obstacles.",
+                    tips="Use the STAR method: Situation, Task, Action, Result."
+                ),
+                InterviewQuestion(
+                    category="system_design",
+                    question=f"How would you design a scalable system for {job_title} responsibilities?",
+                    tips="Start with requirements, then discuss architecture and trade-offs."
+                ),
+                InterviewQuestion(
+                    category="role_specific",
+                    question=f"Why are you interested in the {job_title} role at {company}?",
+                    tips="Research the company and connect your experience to their mission."
+                ),
+                InterviewQuestion(
+                    category="technical",
+                    question="Walk me through how you would debug a production issue.",
+                    tips="Describe your systematic approach: logs, monitoring, isolation, fix."
+                ),
+            ]
 
 
 # Global service instance
