@@ -25,7 +25,7 @@ class TestResumeRoutes:
             "id": "test-123",
             "personal_info": {"name": "John Doe", "email": "john@example.com"},
             "experience": [],
-            "skills": {"technical": [], "frameworks": [], "tools": [], "languages": []},
+            "skills": {"technical": [], "soft_skills": [], "tools": [], "languages": []},
             "projects": [],
             "education": []
         }
@@ -95,8 +95,8 @@ class TestOptimizationRoutes:
         mock_optimize.return_value = mock_optimize_generator()
         
         response = client.post("/optimize", json={
-            "resume_id": "resume-123",
-            "job_id": "job-456"
+            "resume_id": "550e8400-e29b-41d4-a716-446655440000",
+            "job_id": "550e8400-e29b-41d4-a716-446655440001"
         })
         
         assert response.status_code == 200
@@ -107,7 +107,7 @@ class TestOptimizationRoutes:
         mock_save.return_value = None
         
         response = client.post("/optimize/save", json={
-            "resume_id": "resume-123",
+            "resume_id": "550e8400-e29b-41d4-a716-446655440000",
             "optimized_data": {"test": "data"}
         })
         
@@ -123,8 +123,8 @@ class TestOptimizationRoutes:
         mock_generate.return_value = "Test cover letter"
         
         response = client.post("/optimize/cover-letter", json={
-            "resume_id": "resume-123",
-            "job_id": "job-456"
+            "resume_id": "550e8400-e29b-41d4-a716-446655440000",
+            "job_id": "550e8400-e29b-41d4-a716-446655440001"
         })
         
         assert response.status_code == 200

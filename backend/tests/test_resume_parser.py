@@ -167,7 +167,7 @@ class TestResumeSchemas:
             "experience": [],
             "skills": {
                 "technical": ["Python"],
-                "frameworks": [],
+                "soft_skills": [],
                 "tools": [],
                 "languages": []
             },
@@ -191,7 +191,7 @@ class TestResumeSchemas:
                 "email": "invalid-email"  # Invalid format
             },
             "experience": [],
-            "skills": {"technical": [], "frameworks": [], "tools": [], "languages": []},
+            "skills": {"technical": [], "soft_skills": [], "tools": [], "languages": []},
             "projects": [],
             "education": []
         }

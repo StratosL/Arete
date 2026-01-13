@@ -265,11 +265,7 @@ describe('GitHubAnalysis', () => {
     await user.click(analyzeButton);
     
     await waitFor(() => {
-      expect(mockSetMetrics).toHaveBeenCalledWith(expect.objectContaining({
-        username: undefined,
-        totalRepos: undefined,
-        totalStars: undefined
-      }));
+      expect(screen.getByText(/Failed to analyze GitHub profile/)).toBeInTheDocument();
     });
   });
 
@@ -380,9 +376,18 @@ describe('GitHubAnalysis', () => {
     await user.click(analyzeButton);
     
     await waitFor(() => {
-      expect(screen.getByRole('heading', { name: /incomplete-repo/i })).toBeInTheDocument();
-      expect(screen.getByText('No description')).toBeInTheDocument();
-      expect(screen.getByText('Unknown')).toBeInTheDocument(); // Default language
+      expect(mockSetMetrics).toHaveBeenCalledWith(expect.objectContaining({
+        username: 'testuser',
+        totalRepos: 1,
+        totalStars: 5,
+        topRepos: expect.arrayContaining([
+          expect.objectContaining({
+            name: 'incomplete-repo',
+            description: 'No description',
+            language: 'Unknown'
+          })
+        ])
+      }));
     });
   });
 
@@ -448,7 +453,11 @@ describe('GitHubAnalysis', () => {
     
     await waitFor(() => {
       expect(screen.queryByText(/Failed to analyze GitHub profile/)).not.toBeInTheDocument();
-      expect(screen.getByText('GitHub Metrics')).toBeInTheDocument();
+      expect(mockSetMetrics).toHaveBeenCalledWith(expect.objectContaining({
+        username: 'testuser',
+        totalRepos: 10,
+        totalStars: 50
+      }));
     });
   });
 

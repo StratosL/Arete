@@ -1,4 +1,8 @@
 import '@testing-library/jest-dom';
+import * as React from 'react';
+
+// Make React available globally for tests
+global.React = React;
 
 // Mock fetch globally
 global.fetch = vi.fn();

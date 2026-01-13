@@ -81,10 +81,15 @@ class TestExportService:
         assert "Python" in all_skills
         assert all_skills.count("Python") == 1  # No duplicates
 
-        # Check categorization
-        assert "Languages" in result
-        assert "Frontend" in result
-        assert "Cloud & DevOps" in result
+        # Check that skills are combined into Technical Skills category
+        assert "Technical Skills" in result
+        technical_skills = result["Technical Skills"]
+        assert "Python" in technical_skills
+        assert "JavaScript" in technical_skills
+        assert "React" in technical_skills
+        assert "Django" in technical_skills
+        assert "Git" in technical_skills
+        assert "Docker" in technical_skills
 
     @pytest.mark.asyncio
     async def test_export_resume_not_found(self, mock_supabase):

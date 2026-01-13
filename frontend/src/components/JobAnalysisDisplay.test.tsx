@@ -32,16 +32,16 @@ describe('JobAnalysisDisplay', () => {
     render(<JobAnalysisDisplay jobAnalysis={mockJobAnalysis} />);
     
     expect(screen.getByText('Required Skills')).toBeInTheDocument();
-    expect(screen.getByText('Python')).toBeInTheDocument();
-    expect(screen.getByText('React')).toBeInTheDocument();
-    expect(screen.getByText('PostgreSQL')).toBeInTheDocument();
+    expect(screen.getAllByText('Python')).toHaveLength(2); // In required and technologies
+    expect(screen.getAllByText('React')).toHaveLength(2); // In required and technologies
+    expect(screen.getAllByText('PostgreSQL')).toHaveLength(2); // In required and technologies
   });
 
   it('displays preferred skills section', () => {
     render(<JobAnalysisDisplay jobAnalysis={mockJobAnalysis} />);
     
     expect(screen.getByText('Preferred Skills')).toBeInTheDocument();
-    expect(screen.getByText('Docker')).toBeInTheDocument();
+    expect(screen.getAllByText('Docker')).toHaveLength(2); // In preferred and technologies
     expect(screen.getByText('AWS')).toBeInTheDocument();
     expect(screen.getByText('TypeScript')).toBeInTheDocument();
   });
@@ -92,12 +92,12 @@ describe('JobAnalysisDisplay', () => {
   it('renders proper icons for each section', () => {
     render(<JobAnalysisDisplay jobAnalysis={mockJobAnalysis} />);
     
-    // Check that icons are rendered (they should be in the DOM)
-    const briefcaseIcons = document.querySelectorAll('[data-lucide="briefcase"]');
-    const targetIcons = document.querySelectorAll('[data-lucide="target"]');
-    const trendingUpIcons = document.querySelectorAll('[data-lucide="trending-up"]');
-    const codeIcons = document.querySelectorAll('[data-lucide="code"]');
-    const checkCircleIcons = document.querySelectorAll('[data-lucide="check-circle"]');
+    // Check that icons are rendered by looking for lucide icon classes
+    const briefcaseIcons = document.querySelectorAll('.lucide-briefcase');
+    const targetIcons = document.querySelectorAll('.lucide-target');
+    const trendingUpIcons = document.querySelectorAll('.lucide-trending-up');
+    const codeIcons = document.querySelectorAll('.lucide-code');
+    const checkCircleIcons = document.querySelectorAll('.lucide-check-circle');
     
     expect(briefcaseIcons.length).toBeGreaterThan(0);
     expect(targetIcons.length).toBeGreaterThan(0);
@@ -140,12 +140,12 @@ describe('JobAnalysisDisplay', () => {
     render(<JobAnalysisDisplay jobAnalysis={skillsJobAnalysis} />);
     
     // Check required skills
-    expect(screen.getByText('HTML')).toBeInTheDocument();
-    expect(screen.getByText('CSS')).toBeInTheDocument();
-    expect(screen.getByText('JavaScript')).toBeInTheDocument();
+    expect(screen.getAllByText('HTML')).toHaveLength(2); // In required and technologies
+    expect(screen.getAllByText('CSS')).toHaveLength(2); // In required and technologies
+    expect(screen.getAllByText('JavaScript')).toHaveLength(2); // In required and technologies
     
     // Check preferred skills
-    expect(screen.getByText('Vue.js')).toBeInTheDocument();
+    expect(screen.getAllByText('Vue.js')).toHaveLength(2); // In preferred and technologies
     expect(screen.getByText('Nuxt.js')).toBeInTheDocument();
     expect(screen.getByText('Tailwind CSS')).toBeInTheDocument();
     

@@ -23,6 +23,7 @@ const mockResumeData: ResumeData = {
   ],
   skills: {
     technical: ['Python', 'JavaScript'],
+    soft_skills: ['Leadership', 'Communication'],
     frameworks: ['React', 'FastAPI'],
     tools: ['Git', 'Docker'],
     languages: ['English', 'Spanish']
@@ -68,7 +69,7 @@ describe('ResumeDisplay', () => {
     
     expect(screen.getByText('Skills')).toBeInTheDocument();
     expect(screen.getByText('Technical Skills')).toBeInTheDocument();
-    expect(screen.getByText('Frameworks')).toBeInTheDocument();
+    expect(screen.getByText('Soft Skills')).toBeInTheDocument();
   });
 
   it('renders projects section', () => {

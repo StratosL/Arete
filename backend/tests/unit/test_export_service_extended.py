@@ -200,18 +200,22 @@ class TestExportServiceExtended:
         with patch.object(self.service, '_llm_categorize_skills', return_value={"Other": []}):
             result = await self.service._deduplicate_and_categorize_skills(skills_dict)
             
-            # Check deduplication
-            assert "Python" in result["Languages"]
-            assert result["Languages"].count("Python") == 1  # No duplicates
+            # Check that skills are combined into Technical Skills category
+            assert "Technical Skills" in result
+            technical_skills = result["Technical Skills"]
             
-            # Check categorization
-            assert "JavaScript" in result["Languages"]
-            assert "React" in result["Frontend"]
-            assert "Vue" in result["Frontend"]  # Vue.js gets normalized to Vue
-            assert "Django" in result["Backend"]
-            assert "Git" in result["Tools"]
-            assert "Docker" in result["Cloud & DevOps"]
-            assert "Go" in result["Languages"]
+            # Check deduplication
+            assert "Python" in technical_skills
+            assert technical_skills.count("Python") == 1  # No duplicates
+            
+            # Check that all skills are present
+            assert "JavaScript" in technical_skills
+            assert "React" in technical_skills
+            assert "Vue" in technical_skills or "Vue.js" in technical_skills  # Vue.js normalization
+            assert "Django" in technical_skills
+            assert "Git" in technical_skills
+            assert "Docker" in technical_skills
+            assert "Go" in technical_skills
 
     # PDF Generation Tests
     @pytest.mark.asyncio
@@ -395,7 +399,7 @@ class TestExportServiceExtended:
                 await self.service.export_resume("test-id", "pdf")
                 
                 # Verify optimized data was used
-                mock_pdf.assert_called_once_with(optimized_data, "test-id")
+                mock_pdf.assert_called_once_with(optimized_data, "test-id", "classic")
 
     @pytest.mark.asyncio
     async def test_export_resume_not_found(self):

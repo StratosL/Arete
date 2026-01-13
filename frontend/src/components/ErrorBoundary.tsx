@@ -4,6 +4,7 @@ import { AlertCircle } from 'lucide-react';
 interface ErrorBoundaryState {
   hasError: boolean;
   error?: Error;
+  resetCount: number;
 }
 
 interface ErrorBoundaryProps {
@@ -14,10 +15,10 @@ interface ErrorBoundaryProps {
 export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
   constructor(props: ErrorBoundaryProps) {
     super(props);
-    this.state = { hasError: false };
+    this.state = { hasError: false, resetCount: 0 };
   }
 
-  static getDerivedStateFromError(error: Error): ErrorBoundaryState {
+  static getDerivedStateFromError(error: Error): Partial<ErrorBoundaryState> {
     console.error('ErrorBoundary caught error:', error);
     return { hasError: true, error };
   }
@@ -27,7 +28,11 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
   }
 
   resetError = () => {
-    this.setState({ hasError: false, error: undefined });
+    this.setState(prevState => ({ 
+      hasError: false, 
+      error: undefined,
+      resetCount: prevState.resetCount + 1
+    }));
   };
 
   render() {
@@ -36,7 +41,8 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
       return <FallbackComponent error={this.state.error} resetError={this.resetError} />;
     }
 
-    return this.props.children;
+    // Use resetCount as key to force re-rendering after reset
+    return <div key={this.state.resetCount}>{this.props.children}</div>;
   }
 }
 
