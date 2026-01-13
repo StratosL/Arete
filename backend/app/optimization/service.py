@@ -161,17 +161,23 @@ class OptimizationService:
     ) -> list[OptimizationSuggestion]:
         """Generate keyword optimization suggestions"""
         
+        # Extract and normalize existing skills
+        existing_skills = self._get_existing_skills(resume_data)
+        
+        # Filter job requirements to exclude existing skills
+        missing_skills = self._find_missing_skills(job_analysis, existing_skills)
+        
+        if not missing_skills:
+            return []
+        
         prompt = f"""
-        Analyze this resume against job requirements and suggest keyword improvements.
+        Analyze this resume against job requirements and suggest ONLY missing keywords.
         
-        Job Requirements:
-        - Required Skills: {', '.join(job_analysis.get('required_skills', []))}
-        - Technologies: {', '.join(job_analysis.get('technologies', []))}
-        - Key Requirements: {', '.join(job_analysis.get('key_requirements', []))}
+        Job Requirements (missing from resume):
+        - Required Skills: {', '.join(missing_skills.get('required_skills', []))}
+        - Technologies: {', '.join(missing_skills.get('technologies', []))}
         
-        Resume Skills:
-        - Technical: {', '.join(resume_data.get('skills', {}).get('technical', []))}
-        - Frameworks: {', '.join(resume_data.get('skills', {}).get('frameworks', []))}
+        IMPORTANT: Only suggest skills that are NOT already in the resume.
         
         Return ONLY a JSON array of suggestions in this format:
         [
@@ -210,6 +216,43 @@ class OptimizationService:
                 reason="Failed to parse AI suggestions",
                 impact="medium"
             )]
+
+    def _get_existing_skills(self, resume_data: dict) -> set[str]:
+        """Extract and normalize all existing skills from resume"""
+        skills = resume_data.get('skills', {})
+        existing_skills = set()
+        
+        # Collect skills from all categories
+        for category in ['technical', 'soft_skills', 'tools', 'languages']:
+            category_skills = skills.get(category, [])
+            for skill in category_skills:
+                existing_skills.add(skill.lower().strip())
+        
+        return existing_skills
+
+    def _find_missing_skills(self, job_analysis: dict, existing_skills: set[str]) -> dict[str, list[str]]:
+        """Find job requirements that don't exist in resume skills"""
+        missing_skills = {}
+        
+        # Check required skills
+        required_skills = job_analysis.get('required_skills', [])
+        missing_required = [
+            skill for skill in required_skills 
+            if skill.lower().strip() not in existing_skills
+        ]
+        if missing_required:
+            missing_skills['required_skills'] = missing_required
+        
+        # Check technologies
+        technologies = job_analysis.get('technologies', [])
+        missing_tech = [
+            tech for tech in technologies 
+            if tech.lower().strip() not in existing_skills
+        ]
+        if missing_tech:
+            missing_skills['technologies'] = missing_tech
+        
+        return missing_skills
 
     async def _enhance_experience(
         self, resume_data: dict, job_analysis: dict

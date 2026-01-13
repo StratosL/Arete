@@ -92,11 +92,11 @@ export const ResumeDisplay = ({ resumeData }: ResumeDisplayProps) => {
             </div>
           </div>
           <div>
-            <h4 className="font-medium text-gray-900 dark:text-[hsl(var(--h2-foreground))] mb-2">Frameworks</h4>
+            <h4 className="font-medium text-gray-900 dark:text-[hsl(var(--h2-foreground))] mb-2">Soft Skills</h4>
             <div className="flex flex-wrap gap-2">
-              {resumeData.skills.frameworks.map((framework, i) => (
+              {resumeData.skills.soft_skills.map((skill, i) => (
                 <span key={i} className="px-2 py-1 bg-green-100 text-green-700 text-sm rounded">
-                  {framework}
+                  {skill}
                 </span>
               ))}
             </div>

@@ -111,21 +111,59 @@ export const optimizationApi = {
   },
 
   saveOptimization: async (resumeId: string, suggestions: any[], resumeData: any): Promise<void> => {
-    // Apply accepted suggestions to create optimized resume data
     const acceptedSuggestions = suggestions.filter(s => s.accepted);
-    const optimizedData = JSON.parse(JSON.stringify(resumeData)); // Deep clone
+    const optimizedData = JSON.parse(JSON.stringify(resumeData));
     
-    // Apply each accepted suggestion to the resume data
+    // Helper function for case-insensitive skill deduplication
+    const deduplicateSkills = (skills: any) => {
+      if (!skills) return { technical: [], soft_skills: [], tools: [], languages: [] };
+      
+      const allSkills = [
+        ...(skills.technical || []),
+        ...(skills.soft_skills || []),
+        ...(skills.tools || []),
+        ...(skills.languages || [])
+      ];
+      
+      const normalizedMap = new Map();
+      allSkills.forEach(skill => {
+        const normalized = skill.toLowerCase().trim();
+        if (!normalizedMap.has(normalized)) {
+          normalizedMap.set(normalized, skill);
+        }
+      });
+      
+      return {
+        technical: skills.technical?.filter((skill: string) => 
+          normalizedMap.get(skill.toLowerCase().trim()) === skill) || [],
+        soft_skills: skills.soft_skills?.filter((skill: string) => 
+          normalizedMap.get(skill.toLowerCase().trim()) === skill) || [],
+        tools: skills.tools?.filter((skill: string) => 
+          normalizedMap.get(skill.toLowerCase().trim()) === skill) || [],
+        languages: skills.languages?.filter((skill: string) => 
+          normalizedMap.get(skill.toLowerCase().trim()) === skill) || []
+      };
+    };
+    
     for (const suggestion of acceptedSuggestions) {
       if (suggestion.section === 'skills' && suggestion.type === 'add_keyword') {
-        // Add new skill
         if (!optimizedData.skills) optimizedData.skills = { technical: [] };
         if (!optimizedData.skills.technical) optimizedData.skills.technical = [];
-        if (!optimizedData.skills.technical.includes(suggestion.suggested)) {
+        
+        const existingSkills = [
+          ...(optimizedData.skills.technical || []),
+          ...(optimizedData.skills.soft_skills || []),
+          ...(optimizedData.skills.tools || []),
+          ...(optimizedData.skills.languages || [])
+        ];
+        
+        const normalizedExisting = existingSkills.map(s => s.toLowerCase().trim());
+        const normalizedSuggested = suggestion.suggested.toLowerCase().trim();
+        
+        if (!normalizedExisting.includes(normalizedSuggested)) {
           optimizedData.skills.technical.push(suggestion.suggested);
         }
       } else if (suggestion.section === 'experience') {
-        // Update experience descriptions
         if (optimizedData.experience) {
           for (const exp of optimizedData.experience) {
             if (exp.description) {
@@ -136,7 +174,6 @@ export const optimizationApi = {
           }
         }
       } else if (suggestion.section === 'projects') {
-        // Update project descriptions
         if (optimizedData.projects) {
           for (const proj of optimizedData.projects) {
             if (proj.description === suggestion.original) {
@@ -145,6 +182,11 @@ export const optimizationApi = {
           }
         }
       }
+    }
+    
+    // Final deduplication of all skills
+    if (optimizedData.skills) {
+      optimizedData.skills = deduplicateSkills(optimizedData.skills);
     }
     
     await apiClient.post('/optimize/save', {

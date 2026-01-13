@@ -17,7 +17,7 @@ export interface Experience {
 
 export interface Skills {
   technical: string[];
-  frameworks: string[];
+  soft_skills: string[];
   tools: string[];
   languages: string[];
 }

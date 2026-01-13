@@ -444,31 +444,41 @@ Return ONLY valid JSON:
     async def _deduplicate_and_categorize_skills(
         self, skills_dict: dict
     ) -> dict[str, list[str]]:
-        """Deduplicate skills and categorize using quick-match + LLM fallback"""
+        """Deduplicate skills and categorize using quick-match + LLM fallback
         
-        # Collect and deduplicate all skills
-        all_skills = set()
+        Handles both old format (frameworks) and new format (soft_skills) for backward compatibility.
+        """
+        
+        # Collect and deduplicate all technical skills (technical + frameworks for backward compatibility)
+        technical_skills = set()
         for category in ['technical', 'frameworks', 'tools', 'languages']:
             for skill in skills_dict.get(category, []):
                 normalized = self._normalize_skill(skill)
-                if normalized.lower() not in {s.lower() for s in all_skills}:
-                    all_skills.add(normalized)
+                if normalized.lower() not in {s.lower() for s in technical_skills}:
+                    technical_skills.add(normalized)
         
-        # Categorize: quick-match first, collect unknowns for LLM
+        # Collect soft skills (new field)
+        soft_skills = set()
+        for skill in skills_dict.get('soft_skills', []):
+            normalized = self._normalize_skill(skill)
+            if normalized.lower() not in {s.lower() for s in soft_skills}:
+                soft_skills.add(normalized)
+        
+        # Categorize technical skills: quick-match first, collect unknowns for LLM
         categorized = {
             'Languages': [], 'Frontend': [], 'Backend': [],
             'Databases': [], 'Cloud & DevOps': [], 'Tools': [], 'Other': []
         }
         unknown_skills = []
         
-        for skill in all_skills:
+        for skill in technical_skills:
             category = self._quick_categorize(skill)
             if category:
                 categorized[category].append(skill)
             else:
                 unknown_skills.append(skill)
         
-        # LLM categorization for unknown skills
+        # LLM categorization for unknown technical skills
         if unknown_skills:
             llm_results = await self._llm_categorize_skills(unknown_skills)
             for category, skills in llm_results.items():
@@ -480,11 +490,19 @@ Return ONLY valid JSON:
         # Post-process to fix any miscategorizations
         categorized = self._post_process_categorized_skills(categorized)
 
-        # Sort each category and remove empty ones
+        # Merge technical and frameworks into 'Technical Skills' category
+        technical_combined = []
+        for category in ['Languages', 'Frontend', 'Backend', 'Databases', 'Cloud & DevOps', 'Tools']:
+            technical_combined.extend(categorized.get(category, []))
+        
+        # Build final result with new structure
         result = {}
-        for category, skills in categorized.items():
-            if skills:
-                result[category] = sorted(set(skills), key=str.lower)
+        if technical_combined:
+            result['Technical Skills'] = sorted(set(technical_combined), key=str.lower)
+        if soft_skills:
+            result['Soft Skills'] = sorted(set(soft_skills), key=str.lower)
+        if categorized.get('Other'):
+            result['Other'] = sorted(set(categorized['Other']), key=str.lower)
 
         return result
     
@@ -598,10 +616,7 @@ Return ONLY valid JSON:
             )
             
             # Define display order for categories
-            category_order = [
-                'Languages', 'Frontend', 'Backend', 'Databases',
-                'Cloud & DevOps', 'Tools', 'Other'
-            ]
+            category_order = ['Technical Skills', 'Soft Skills', 'Other']
             
             for category in category_order:
                 if category in skills_data and skills_data[category]:
@@ -817,10 +832,17 @@ Return ONLY valid JSON:
         if resume_data.get("skills"):
             html += "<section><h2>Skills</h2>"
             skills = resume_data["skills"]
-            if skills.get("technical"):
-                html += f"<p><strong>Technical:</strong> {', '.join(skills['technical'])}</p>"
-            if skills.get("frameworks"):
-                html += f"<p><strong>Frameworks:</strong> {', '.join(skills['frameworks'])}</p>"
+            
+            # Handle new format (soft_skills) or old format (frameworks) for backward compatibility
+            if skills.get("technical") or skills.get("frameworks"):
+                # Combine technical and frameworks for backward compatibility
+                technical_skills = skills.get("technical", []) + skills.get("frameworks", [])
+                if technical_skills:
+                    html += f"<p><strong>Technical Skills:</strong> {', '.join(technical_skills)}</p>"
+            
+            if skills.get("soft_skills"):
+                html += f"<p><strong>Soft Skills:</strong> {', '.join(skills['soft_skills'])}</p>"
+            
             html += "</section>"
         
         # Projects (sorted: resume projects first, GitHub-sourced last)
@@ -958,10 +980,17 @@ Return ONLY valid JSON:
         if resume_data.get("skills"):
             html += "<h2>Skills</h2>"
             skills = resume_data["skills"]
-            if skills.get("technical"):
-                html += f"<p><strong>Technical:</strong> {', '.join(skills['technical'])}</p>"
-            if skills.get("frameworks"):
-                html += f"<p><strong>Frameworks:</strong> {', '.join(skills['frameworks'])}</p>"
+            
+            # Handle new format (soft_skills) or old format (frameworks) for backward compatibility
+            if skills.get("technical") or skills.get("frameworks"):
+                # Combine technical and frameworks for backward compatibility
+                technical_skills = skills.get("technical", []) + skills.get("frameworks", [])
+                if technical_skills:
+                    html += f"<p><strong>Technical Skills:</strong> {', '.join(technical_skills)}</p>"
+            
+            if skills.get("soft_skills"):
+                html += f"<p><strong>Soft Skills:</strong> {', '.join(skills['soft_skills'])}</p>"
+            
             if skills.get("tools"):
                 html += f"<p><strong>Tools:</strong> {', '.join(skills['tools'])}</p>"
 
@@ -1045,10 +1074,16 @@ Return ONLY valid JSON:
         if resume_data.get("skills"):
             html += "<h2>Skills</h2>"
             skills = resume_data["skills"]
-            if skills.get("technical"):
-                html += f"<p><strong>Technical:</strong> {', '.join(skills['technical'])}</p>"
-            if skills.get("frameworks"):
-                html += f"<p><strong>Frameworks:</strong> {', '.join(skills['frameworks'])}</p>"
+            
+            # Handle new format (soft_skills) or old format (frameworks) for backward compatibility
+            if skills.get("technical") or skills.get("frameworks"):
+                # Combine technical and frameworks for backward compatibility
+                technical_skills = skills.get("technical", []) + skills.get("frameworks", [])
+                if technical_skills:
+                    html += f"<p><strong>Technical Skills:</strong> {', '.join(technical_skills)}</p>"
+            
+            if skills.get("soft_skills"):
+                html += f"<p><strong>Soft Skills:</strong> {', '.join(skills['soft_skills'])}</p>"
 
         # Projects (sorted: resume projects first, GitHub-sourced last)
         if resume_data.get("projects"):
@@ -1196,10 +1231,7 @@ Return ONLY valid JSON:
             <div class="skills-grid">
 """
                 # Define display order
-                category_order = [
-                    'Languages', 'Frontend', 'Backend', 'Databases',
-                    'Cloud & DevOps', 'Tools', 'Other'
-                ]
+                category_order = ['Technical Skills', 'Soft Skills', 'Other']
 
                 for category in category_order:
                     if category in skills_data and skills_data[category]:

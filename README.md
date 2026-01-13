@@ -236,6 +236,7 @@ docker-compose up --build
 - **Two-Stage Parsing**: Advanced parsing pipeline (File → Markdown → Structured JSON via Claude API)
 - **GitHub Integration**: Optional GitHub profile analysis for enhanced project insights
 - **Structured Data**: Extracts personal info, experience, skills, projects, and education
+- **Enhanced Skills Structure**: Modern categorization with Technical Skills (merged technical+frameworks) and Soft Skills sections
 - **Real-Time Validation**: Instant file type and size validation with user feedback
 - **Responsive Design**: Mobile-friendly interface with Tailwind CSS + shadcn/ui components
 
@@ -258,6 +259,7 @@ docker-compose up --build
 - **Resume-Job Matching**: Intelligent analysis of alignment between resume and job requirements
 - **ATS Compliance**: Keyword density optimization and compliance scoring for applicant tracking systems
 - **Tech-Specific Intelligence**: Framework-aware recommendations (React vs Angular, AWS vs GCP, etc.)
+- **Comprehensive Skill Deduplication**: Case-insensitive skill matching prevents duplicate suggestions like 'Cloud Computing' appearing multiple times
 - **Document Export**: Professional PDF (ReportLab) and DOCX generation with ATS-compliant formatting
 - **Template Selection**: Choose between ATS Classic (maximum compatibility) and Modern Professional (clean design with accent colors)
 - **Smart Project Ordering**: Resume-sourced projects displayed first, GitHub projects grouped at the end

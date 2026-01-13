@@ -19,7 +19,7 @@ class Experience(BaseModel):
 
 class Skills(BaseModel):
     technical: list[str]
-    frameworks: list[str]
+    soft_skills: list[str]
     tools: list[str]
     languages: list[str]
 

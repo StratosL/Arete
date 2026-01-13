@@ -104,7 +104,7 @@ class ResumeParser:
             ],
             "skills": {{
                 "technical": ["skill1", "skill2"],
-                "frameworks": ["framework1", "framework2"],
+                "soft_skills": ["communication", "leadership", "problem-solving"],
                 "tools": ["tool1", "tool2"],
                 "languages": ["language1", "language2"]
             }},
