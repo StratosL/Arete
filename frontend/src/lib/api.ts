@@ -158,10 +158,20 @@ export const optimizationApi = {
         ];
         
         const normalizedExisting = existingSkills.map(s => s.toLowerCase().trim());
-        const normalizedSuggested = suggestion.suggested.toLowerCase().trim();
         
-        if (!normalizedExisting.includes(normalizedSuggested)) {
-          optimizedData.skills.technical.push(suggestion.suggested);
+        // Parse suggested skills: remove prefixes and split by commas
+        const cleanedSuggestion = suggestion.suggested
+          .replace(/^(Add|Include|Consider|Use)\s+/i, '')
+          .split(',')
+          .map(skill => skill.trim())
+          .filter(skill => skill.length > 0);
+        
+        for (const skill of cleanedSuggestion) {
+          const normalizedSkill = skill.toLowerCase().trim();
+          if (!normalizedExisting.includes(normalizedSkill)) {
+            optimizedData.skills.technical.push(skill);
+            normalizedExisting.push(normalizedSkill);
+          }
         }
       } else if (suggestion.section === 'experience') {
         if (optimizedData.experience) {

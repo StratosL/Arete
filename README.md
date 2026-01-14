@@ -12,9 +12,9 @@
 ![Test Coverage](https://img.shields.io/badge/coverage-94.4%25-brightgreen.svg)
 ![Build Status](https://img.shields.io/badge/build-passing-success.svg)
 
-**Transform generic resumes into ATS-optimized, role-specific applications**
+**Transform generic Tech resumes into ATS-optimized, role-specific applications**
 
-<!-- Demo GIF placeholder - add your demo GIF here -->
+![Arete Resume Demo](assets\arete_30sec.gif)
 <!-- ![Demo](docs/demo.gif) -->
 
 [🚀 Quick Start](#-quick-start) • [📚 Documentation](#-documentation) • [🎯 Features](#-key-features) • [🗺️ Roadmap](#️-roadmap)
@@ -65,13 +65,14 @@ Arete is an AI-powered job application optimizer specifically designed for tech 
 
 | Requirement | Version | Installation Guide |
 |-------------|---------|-------------------|
+| Python | 3.12+ | [python.org](https://www.python.org/downloads/) |
 | Docker | 20.10+ | [Install Docker](docs/INSTALLATION.md#docker-installation) |
 | Docker Compose | 2.0+ | Included with Docker Desktop |
 | Git | 2.30+ | [git-scm.com](https://git-scm.com/downloads) |
 
 **API Keys Required:**
 - [Supabase](https://supabase.com) (free tier) - Database & Storage
-- [Anthropic](https://console.anthropic.com) (pay-as-you-go, ~$0.02-0.05/resume) - Claude API
+- [Anthropic](https://console.anthropic.com) (pay-as-you-go, ~$0.02-0.09/resume) - Claude API
 
 <details>
 <summary><strong>📦 Detailed Setup Guides</strong></summary>

@@ -219,7 +219,7 @@ class OptimizationService:
                 "section": "skills",
                 "type": "add_keyword",
                 "original": "Current skill list",
-                "suggested": "Enhanced skill list with missing keywords",
+                "suggested": "React, Node.js, Docker",
                 "reason": "Job requires X but resume doesn't mention it",
                 "impact": "high"
             }}
