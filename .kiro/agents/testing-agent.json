@@ -35,7 +35,7 @@
         "e2e/**/*.spec.ts",
         "frontend/vitest.config.ts",
         "frontend/vitest.setup.ts",
-        "playwright.config.ts"
+        "e2e/playwright.config.ts"
       ]
     },
     "shell": {

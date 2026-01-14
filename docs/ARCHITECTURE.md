@@ -738,4 +738,4 @@ For interactive API documentation, run the application and visit:
 - **Installation Guide**: See [INSTALLATION.md](INSTALLATION.md)
 - **API Keys Setup**: See [API_KEYS.md](API_KEYS.md)
 - **Troubleshooting**: See [TROUBLESHOOTING.md](TROUBLESHOOTING.md)
-- **Kiro CLI Guide**: See [kiro-guide.md](../kiro-guide.md)
+- **Kiro CLI Guide**: See [kiro-guide.md](kiro-guide.md)

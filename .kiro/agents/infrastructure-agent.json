@@ -13,7 +13,7 @@
     "file://scripts/**/*.sh",
     "file://scripts/**/*.bat",
     "file://README.md",
-    "file://WINDOWS_SETUP.md"
+    "file://docs/WINDOWS_SETUP.md"
   ],
   "tools": [
     "read",

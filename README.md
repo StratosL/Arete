@@ -1,7 +1,7 @@
 # Arete - AI-Powered Resume Optimizer for Tech Professionals
 
 <div align="center">
-  <img src="arete-logo.jpg" alt="Arete Logo" width="400">
+  <img src="assets/arete-logo.jpg" alt="Arete Logo" width="400">
 </div>
 
 <div align="center">
@@ -180,7 +180,7 @@ kiro @code-review    # Quality checks
 - Contract-first approach with API specifications
 - Research-backed development with 95%+ success rate
 
-Learn more: [kiro-guide.md](kiro-guide.md) | [.kiro/orchestration/](.kiro/orchestration/)
+Learn more: [docs/kiro-guide.md](docs/kiro-guide.md) | [.kiro/orchestration/](.kiro/orchestration/)
 
 ### Running Tests
 
@@ -223,7 +223,7 @@ cd frontend && npm run lint
 | **[API Reference](http://localhost:8000/docs)** | Interactive OpenAPI documentation (requires running app) |
 | **[Troubleshooting](docs/TROUBLESHOOTING.md)** | Common issues, debug commands, error solutions |
 | **[PRD](PRD.md)** | Product Requirements Document |
-| **[Kiro CLI Guide](kiro-guide.md)** | AI-assisted development workflow |
+| **[Kiro CLI Guide](docs/kiro-guide.md)** | AI-assisted development workflow |
 
 ---
 
