@@ -15,7 +15,6 @@
 **Transform generic Tech resumes into ATS-optimized, role-specific applications**
 
 ![Arete Resume Demo](assets\arete_30sec.gif)
-<!-- ![Demo](docs/demo.gif) -->
 
 [🚀 Quick Start](#-quick-start) • [📚 Documentation](#-documentation) • [🎯 Features](#-key-features) • [🗺️ Roadmap](#️-roadmap)
 
